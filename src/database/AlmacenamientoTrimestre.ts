@@ -5,13 +5,10 @@ import Trimestre from '../resources/models/Trimestre';
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 
 export default class AlmacenamientoTrimestre {
-    private conection: mysql.Connection;
+    private conexion: mysql.Pool;
 
-    constructor(databaseConfig: any) {
-      this.conection = mysql.createConnection(databaseConfig);
-      this.conection.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     async crearTrimestre(trimestre: Trimestre): Promise<Trimestre> {
@@ -21,7 +18,7 @@ export default class AlmacenamientoTrimestre {
         trimestre.fechaFin,
       ];
       const promesaTrimestre: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else {
@@ -31,14 +28,13 @@ export default class AlmacenamientoTrimestre {
           }
         });
       });
-
       return promesaTrimestre;
     }
 
     async obtenerTrimestre(id: number): Promise<Trimestre> {
       const consulta = 'SELECT * FROM trimestre WHERE id=?';
       const promesaTrimestre: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, [String(id)], (err, res) => {
+        this.conexion.query(consulta, [String(id)], (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -53,7 +49,6 @@ export default class AlmacenamientoTrimestre {
           }
         });
       });
-
       return promesaTrimestre;
     }
 
@@ -66,7 +61,7 @@ export default class AlmacenamientoTrimestre {
         fechaInicio, fechaFin, fechaInicio, fechaFin,
       ];
       const promise: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -84,7 +79,6 @@ export default class AlmacenamientoTrimestre {
           }
         });
       });
-
       return promise;
     }
 }

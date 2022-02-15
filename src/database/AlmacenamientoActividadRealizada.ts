@@ -12,13 +12,10 @@ import mysql = require('mysql');
 import ActividadesRealizadas from '../resources/models/ActividadesRealizadas';
 
 export default class AlmacenamientoActividadRealizada {
-    private conexion : mysql.Connection;
+    private conexion : mysql.Pool;
 
-    constructor(dataBaseConfig: any) {
-      this.conexion = mysql.createConnection(dataBaseConfig);
-      this.conexion.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     /** Insertar valores en la tabla actividad_realizada de MySQL */
@@ -45,7 +42,6 @@ export default class AlmacenamientoActividadRealizada {
           }
         });
       });
-
       return insertInfo;
     }
 
@@ -73,7 +69,6 @@ export default class AlmacenamientoActividadRealizada {
           }
         });
       });
-
       return promise;
     }
 
@@ -104,7 +99,6 @@ export default class AlmacenamientoActividadRealizada {
           }
         });
       });
-
       return promise;
     }
 
@@ -120,7 +114,6 @@ export default class AlmacenamientoActividadRealizada {
           }
         });
       });
-
       return deleteInfo;
     }
 }
