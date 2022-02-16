@@ -10,13 +10,10 @@ import mysql = require('mysql');
 import ActividadesDeUsuario from '../resources/models/ActividadesDeUsuario';
 
 export default class AlmacenamientoActividadDeUsuario {
-    private conexion : mysql.Connection;
+    private conexion : mysql.Pool;
 
-    constructor(dataBaseConfig: any) {
-      this.conexion = mysql.createConnection(dataBaseConfig);
-      this.conexion.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     /** Insertar valores en la tabla actividad_de_usuario de MySQL */
@@ -41,7 +38,6 @@ export default class AlmacenamientoActividadDeUsuario {
           }
         });
       });
-
       return insertInfo;
     }
 
@@ -70,7 +66,6 @@ export default class AlmacenamientoActividadDeUsuario {
           }
         });
       });
-
       return promise;
     }
 }

@@ -8,19 +8,16 @@ import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
 
 export default class AlmacenamientoReporteParcial {
-    private conection: mysql.Connection;
+    private conexion: mysql.Pool;
 
     private actividad: AlmacenamientoActividadRealizada;
 
     private atencion: AlmacenamientoAtencionRealizada;
 
-    constructor(databaseConfig: any) {
-      this.conection = mysql.createConnection(databaseConfig);
-      this.actividad = new AlmacenamientoActividadRealizada(databaseConfig);
-      this.atencion = new AlmacenamientoAtencionRealizada(databaseConfig);
-      this.conection.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
+      this.actividad = new AlmacenamientoActividadRealizada(con);
+      this.atencion = new AlmacenamientoAtencionRealizada(con);
     }
 
     async crearReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
@@ -32,7 +29,7 @@ export default class AlmacenamientoReporteParcial {
         reporteParcial.horasRealizadas,
       ];
       const promesaReporteParcial: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else {
@@ -42,7 +39,6 @@ export default class AlmacenamientoReporteParcial {
           }
         });
       });
-
       return promesaReporteParcial;
     }
 
@@ -51,7 +47,7 @@ export default class AlmacenamientoReporteParcial {
       + 'JOIN reporte_parcial ON reporte_parcial.servicio_id = servicio.id '
       + 'WHERE servicio.usuario_id = ?';
       const promise: any = await new Promise((resolve, reject) => {
-        this.conection.query(select, [idUsuario], async (err, res) => {
+        this.conexion.query(select, [idUsuario], async (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -75,7 +71,6 @@ export default class AlmacenamientoReporteParcial {
           }
         });
       });
-
       return promise;
     }
 
@@ -84,7 +79,7 @@ export default class AlmacenamientoReporteParcial {
       + 'JOIN reporte_parcial ON reporte_parcial.servicio_id = servicio.id '
       + 'WHERE servicio.id = ?';
       const promise: any = await new Promise((resolve, reject) => {
-        this.conection.query(select, [idServicio], async (err, res) => {
+        this.conexion.query(select, [idServicio], async (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -108,7 +103,6 @@ export default class AlmacenamientoReporteParcial {
           }
         });
       });
-
       return promise;
     }
 
@@ -121,9 +115,8 @@ export default class AlmacenamientoReporteParcial {
         reporteParcial.horasRealizadas,
         String(reporteParcial.id),
       ];
-
       const promesaReporteParcial: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else if (res.affectedRows < 1) {
@@ -133,7 +126,6 @@ export default class AlmacenamientoReporteParcial {
           }
         });
       });
-
       return promesaReporteParcial;
     }
 }

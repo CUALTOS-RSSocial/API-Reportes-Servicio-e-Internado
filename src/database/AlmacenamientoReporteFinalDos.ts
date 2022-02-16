@@ -8,19 +8,16 @@ import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
 
 export default class AlmacenamientoReporteFinalDos {
-    private conection: mysql.Connection;
+    private conexion: mysql.Pool;
 
     private actividad: AlmacenamientoActividadRealizada;
 
     private atencion: AlmacenamientoAtencionRealizada;
 
-    constructor(databaseConfig: any) {
-      this.conection = mysql.createConnection(databaseConfig);
-      this.actividad = new AlmacenamientoActividadRealizada(databaseConfig);
-      this.atencion = new AlmacenamientoAtencionRealizada(databaseConfig);
-      this.conection.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
+      this.actividad = new AlmacenamientoActividadRealizada(con);
+      this.atencion = new AlmacenamientoAtencionRealizada(con);
     }
 
     async crearReporteFinalDos(reporteFinalDos: ReporteFinalDos): Promise<ReporteFinalDos> {
@@ -36,7 +33,7 @@ export default class AlmacenamientoReporteFinalDos {
         reporteFinalDos.propuestas,
       ];
       const promesaReporteFinalDos: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else {
@@ -46,7 +43,6 @@ export default class AlmacenamientoReporteFinalDos {
           }
         });
       });
-
       return promesaReporteFinalDos;
     }
 
@@ -55,7 +51,7 @@ export default class AlmacenamientoReporteFinalDos {
       + 'JOIN reporte_final ON reporte_final.servicio_id = servicio.id '
       + 'WHERE servicio.usuario_id = ?';
       const promise: any = await new Promise((resolve, reject) => {
-        this.conection.query(select, [idUsuario], async (err, res) => {
+        this.conexion.query(select, [idUsuario], async (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -77,7 +73,6 @@ export default class AlmacenamientoReporteFinalDos {
           }
         });
       });
-
       return promise;
     }
 
@@ -95,7 +90,7 @@ export default class AlmacenamientoReporteFinalDos {
         String(reporteFinalDos.id),
       ];
       const promesaReporteFinalDos: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err, res) => {
+        this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else if (res.affectedRows < 1) {
@@ -105,7 +100,6 @@ export default class AlmacenamientoReporteFinalDos {
           }
         });
       });
-
       return promesaReporteFinalDos;
     }
 }
