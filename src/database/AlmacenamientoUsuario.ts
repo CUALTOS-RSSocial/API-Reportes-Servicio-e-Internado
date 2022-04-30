@@ -5,13 +5,10 @@ import Usuario from '../resources/models/Usuario';
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 
 export default class AlmacenamientoUsuario {
-    private conection: mysql.Connection;
+    private conexion: mysql.Pool;
 
-    constructor(databaseConfig: any) {
-      this.conection = mysql.createConnection(databaseConfig);
-      this.conection.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     async crearUsuario(usuario: Usuario): Promise<Usuario> {
@@ -21,7 +18,7 @@ export default class AlmacenamientoUsuario {
         usuario.rol,
       ];
       const promesaUsuario: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, args, (err) => {
+        this.conexion.query(consulta, args, (err) => {
           if (err) {
             reject(err);
           } else {
@@ -29,14 +26,13 @@ export default class AlmacenamientoUsuario {
           }
         });
       });
-
       return promesaUsuario;
     }
 
     async obtenerUsuario(id: number): Promise<Usuario> {
       const consulta = 'SELECT * FROM usuario WHERE id=?';
       const promesaUsuario: any = await new Promise((resolve, reject) => {
-        this.conection.query(consulta, [String(id)], (err, res) => {
+        this.conexion.query(consulta, [String(id)], (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
@@ -48,12 +44,10 @@ export default class AlmacenamientoUsuario {
               nombre: '',
               carrera: '',
             };
-
             resolve(usuario);
           }
         });
       });
-
       return promesaUsuario;
     }
 }

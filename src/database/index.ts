@@ -7,7 +7,7 @@ import AlmacenamientoActividadDeUsuario from './AlmacenamientoActividadDeUsuario
 import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada';
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
 import AlmacenamientoServicioGeneral from './AlmacenamientoServicioGeneral';
-import config from '../../configuracion';
+import conexion from './conexion';
 
 class Database {
   almacenamientoUsuario: AlmacenamientoUsuario;
@@ -27,21 +27,14 @@ class Database {
   almacenamientoServicioGeneral: AlmacenamientoServicioGeneral;
 
   constructor() {
-    const databaseConfig = {
-      host: config.host,
-      user: config.database.user,
-      password: config.database.password,
-      database: config.database.name,
-    };
-
-    this.almacenamientoUsuario = new AlmacenamientoUsuario(databaseConfig);
-    this.almacenamientoTrimestre = new AlmacenamientoTrimestre(databaseConfig);
-    this.almacenamientoReporteParcial = new AlmacenamientoReporteParcial(databaseConfig);
-    this.almacenamientoReporteFinalDos = new AlmacenamientoReporteFinalDos(databaseConfig);
-    this.almacenamientoActividadDeUsuario = new AlmacenamientoActividadDeUsuario(databaseConfig);
-    this.almacenamientoActividadRealizada = new AlmacenamientoActividadRealizada(databaseConfig);
-    this.almacenamientoAtencionRealizada = new AlmacenamientoAtencionRealizada(databaseConfig);
-    this.almacenamientoServicioGeneral = new AlmacenamientoServicioGeneral(databaseConfig);
+    this.almacenamientoUsuario = new AlmacenamientoUsuario(conexion);
+    this.almacenamientoTrimestre = new AlmacenamientoTrimestre(conexion);
+    this.almacenamientoReporteParcial = new AlmacenamientoReporteParcial(conexion);
+    this.almacenamientoReporteFinalDos = new AlmacenamientoReporteFinalDos(conexion);
+    this.almacenamientoActividadDeUsuario = new AlmacenamientoActividadDeUsuario(conexion);
+    this.almacenamientoActividadRealizada = new AlmacenamientoActividadRealizada(conexion);
+    this.almacenamientoAtencionRealizada = new AlmacenamientoAtencionRealizada(conexion);
+    this.almacenamientoServicioGeneral = new AlmacenamientoServicioGeneral(conexion);
   }
 }
 

@@ -14,13 +14,10 @@ import DatosGeneralesServicio from '../resources/models/DatosGeneralesServicio';
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 
 export default class AlmacenamientoServicioGeneral {
-    private conexion : mysql.Connection;
+    private conexion : mysql.Pool;
 
-    constructor(dataBaseConfig: any) {
-      this.conexion = mysql.createConnection(dataBaseConfig);
-      this.conexion.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     /** Insertar valores en la tabla servicio de MySQL */
@@ -60,7 +57,6 @@ export default class AlmacenamientoServicioGeneral {
           }
         });
       });
-
       return insertInfo;
     }
 
@@ -91,7 +87,6 @@ export default class AlmacenamientoServicioGeneral {
           }
         });
       });
-
       return selectInfo;
     }
 
@@ -121,7 +116,6 @@ export default class AlmacenamientoServicioGeneral {
           }
         });
       });
-
       return promise;
     }
 
@@ -130,7 +124,6 @@ export default class AlmacenamientoServicioGeneral {
       const consulta = 'UPDATE servicio SET usuario_id=?, entidad_receptora=?, receptor=?, programa=?,'
       + 'objetivos_programa=?, fecha_inicio=?, fecha_fin=?, horario_hora_inicio=?,'
       + 'horario_hora_fin=? WHERE id=?';
-
       const args = [
         servicio.idUsuario,
         servicio.entidadReceptora,
@@ -143,7 +136,6 @@ export default class AlmacenamientoServicioGeneral {
         servicio.horarioHoraFin,
         servicio.id,
       ];
-
       const updateInfo: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
@@ -155,7 +147,6 @@ export default class AlmacenamientoServicioGeneral {
           }
         });
       });
-
       return updateInfo;
     }
 }

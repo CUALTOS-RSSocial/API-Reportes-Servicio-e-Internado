@@ -12,13 +12,10 @@ import mysql = require('mysql');
 import AtencionesRealizadas from '../resources/models/AtencionesRealizadas';
 
 export default class AlmacenamientoAtencionRealizada {
-    private conexion : mysql.Connection;
+    private conexion : mysql.Pool;
 
-    constructor(dataBaseConfig: any) {
-      this.conexion = mysql.createConnection(dataBaseConfig);
-      this.conexion.connect((err) => {
-        if (err) throw err;
-      });
+    constructor(con: mysql.Pool) {
+      this.conexion = con;
     }
 
     /** Insertar valores en la tabla atencion_realizada de MySQL */
@@ -47,7 +44,6 @@ export default class AlmacenamientoAtencionRealizada {
           }
         });
       });
-
       return insertInfo;
     }
 
@@ -76,7 +72,6 @@ export default class AlmacenamientoAtencionRealizada {
           }
         });
       });
-
       return promise;
     }
 
@@ -106,7 +101,6 @@ export default class AlmacenamientoAtencionRealizada {
           }
         });
       });
-
       return promise;
     }
 
@@ -122,7 +116,6 @@ export default class AlmacenamientoAtencionRealizada {
           }
         });
       });
-
       return deleteInfo;
     }
 }

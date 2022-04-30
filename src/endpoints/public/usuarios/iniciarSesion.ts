@@ -36,7 +36,7 @@ export default async function (req: any, res: any) {
     return res.status(errorData.status).send({ code: errorData.code });
   }
 
-  const carreras = ['ENFA', 'NUTA', 'DENA', 'MCPA', 'MCPE', 'LENF', 'LICD', 'EODP', 'EMFM', 'EMUR', 'ENDO', 'MIDU'];
+  const carreras = ['NUT', 'LNTO', 'ENFA', 'NUTA', 'DENA', 'MCPA', 'MCP', 'LENF', 'ENF', 'LICD', 'DEN', 'EODP', 'EMFM', 'EMUR', 'ENDO', 'MIDU'];
 
   if (!carreras.includes(datosSiiau[4])) {
     errorData.code = 'ESTA_APP_SOLO_FUNCIONA_PARA_CARRERAS_DEL_AREA_DE_LA_SALUD';
