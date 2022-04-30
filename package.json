@@ -1,6 +1,6 @@
 {
   "name": "api-reportes-servicio-e-internado",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API para el registro de reportes de servicio social para las carreras de ciencias de la salud.",
   "main": "API.ts",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/eriklara24/API-Reportes-Servicio-e-Internado"
+    "url": "https://github.com/CUALTOS-RSSocial/API-Reportes-Servicio-e-Internado.git"
   },
   "keywords": [
     "Medicina",
@@ -20,12 +20,12 @@
     "App",
     "API"
   ],
-  "author": "Ramón Paredes Sánchez, Kevin Josué Olmeda de Rueda, Erik Raul Aguirre Lara",
+  "author": "Ramón Paredes Sánchez, Kevin Josué Olmeda de Rueda, Erik Raul Aguirre Lara, Miguel Ángel Sanabria Valdez",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/eriklara24/API-Reportes-Servicio-e-Internado/issues"
   },
-  "homepage": "https://github.com/eriklara24/API-Reportes-Servicio-e-Internado#readme",
+  "homepage": "https://github.com/CUALTOS-RSSocial/API-Reportes-Servicio-e-Internado.git#readme",
   "dependencies": {
     "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
