@@ -12,7 +12,7 @@ const config = {
     semilla: process.env.SEMILLA_AUTENTICACION || 'semillapruebaJKnas490nflz7y1g083gfdjlfuq49yfvmnp934yraiesjfn1lo4780efhdsafkjdq24t0eg',
   },
   SIIAUKey: process.env.SIIAU_LOGIN_KEY || '',
-  SIIAUHost: 'http://ms.mw.siiau.udg.mx:80',
+  SIIAUHost: 'https://ms.mw.siiau.udg.mx:443',
   SIIAUPath: '/WSValidaUsuarios/ValidaUsuarios',
 };
 
