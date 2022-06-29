@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`servicio` (
   `entidad_receptora` VARCHAR(100),
   `receptor` VARCHAR(100),
   `programa` VARCHAR(500) NULL,
-  `objetivos_programa` VARCHAR(500) NULL,
+  `objetivos_programa` VARCHAR(1000) NULL,
   `fecha_inicio` DATE,
   `fecha_fin` DATE,
   `horario_hora_inicio` TIME,
