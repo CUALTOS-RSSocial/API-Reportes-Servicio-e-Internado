@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-useless-catch */
 import mysql = require('mysql');
-import ReporteParcial from '../resources/models/ReporteParcial';
+import ReporteParcial from '../resources/models/ReporteParcial'; //invoca el modelo del reporte parcial 
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada';
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
@@ -21,10 +21,10 @@ export default class AlmacenamientoReporteParcial {
     }
 
     async crearReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
-      const consulta = 'INSERT INTO reporte_parcial(servicio_id, trimestre_id, actualizado, horas_realizadas) VALUES (?, ?, ?, ?)';
+      const consulta = 'INSERT INTO reporte_parcial(servicio_id, semestre_id, actualizado, horas_realizadas) VALUES (?, ?, ?, ?)';
       const args = [
         reporteParcial.idServicio,
-        reporteParcial.idTrimestre,
+        reporteParcial.idSemestre,
         reporteParcial.actualizado,
         reporteParcial.horasRealizadas,
       ];
@@ -59,7 +59,7 @@ export default class AlmacenamientoReporteParcial {
               const aux: ReporteParcial = {
                 id: res[i].id,
                 idServicio: res[i].servicio_id,
-                idTrimestre: res[i].trimestre_id,
+                idSemestre: res[i].semestre_id,
                 actualizado: res[i].actualizado,
                 horasRealizadas: res[i].horas_realizadas,
                 actividadesRealizadas: await this.actividad.obtenerPorIdReporte(res[i].id),
@@ -91,7 +91,7 @@ export default class AlmacenamientoReporteParcial {
               const aux: ReporteParcial = {
                 id: res[i].id,
                 idServicio: res[i].servicio_id,
-                idTrimestre: res[i].trimestre_id,
+                idSemestre: res[i].semestre_id,
                 actualizado: res[i].actualizado,
                 horasRealizadas: res[i].horas_realizadas,
                 actividadesRealizadas: await this.actividad.obtenerPorIdReporte(res[i].id),
@@ -107,10 +107,10 @@ export default class AlmacenamientoReporteParcial {
     }
 
     async actualizarReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
-      const consulta = 'UPDATE reporte_parcial SET servicio_id=?, trimestre_id=?, actualizado=?, horas_realizadas=? WHERE id=?';
+      const consulta = 'UPDATE reporte_parcial SET servicio_id=?, semestre_id=?, actualizado=?, horas_realizadas=? WHERE id=?';
       const args = [
         reporteParcial.idServicio,
-        reporteParcial.idTrimestre,
+        reporteParcial.idSemestre,
         reporteParcial.actualizado,
         reporteParcial.horasRealizadas,
         String(reporteParcial.id),

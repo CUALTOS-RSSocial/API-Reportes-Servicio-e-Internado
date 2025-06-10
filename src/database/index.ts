@@ -1,6 +1,6 @@
 /* eslint-disable linebreak-style */
 import AlmacenamientoUsuario from './AlmacenamientoUsuario';
-import AlmacenamientoTrimestre from './AlmacenamientoTrimestre';
+import AlmacenamientoSemestre from './AlmacenamientoSemestre';
 import AlmacenamientoReporteParcial from './AlmacenamientoReporteParcial';
 import AlmacenamientoReporteFinalDos from './AlmacenamientoReporteFinalDos';
 import AlmacenamientoActividadDeUsuario from './AlmacenamientoActividadDeUsuario';
@@ -12,7 +12,7 @@ import conexion from './conexion';
 class Database {
   almacenamientoUsuario: AlmacenamientoUsuario;
 
-  almacenamientoTrimestre: AlmacenamientoTrimestre;
+  almacenamientoSemestre: AlmacenamientoSemestre; //Esto afecta la carpeta de chrono-trigger/jobs
 
   almacenamientoReporteParcial: AlmacenamientoReporteParcial;
 
@@ -28,7 +28,7 @@ class Database {
 
   constructor() {
     this.almacenamientoUsuario = new AlmacenamientoUsuario(conexion);
-    this.almacenamientoTrimestre = new AlmacenamientoTrimestre(conexion);
+    this.almacenamientoSemestre = new AlmacenamientoSemestre(conexion);
     this.almacenamientoReporteParcial = new AlmacenamientoReporteParcial(conexion);
     this.almacenamientoReporteFinalDos = new AlmacenamientoReporteFinalDos(conexion);
     this.almacenamientoActividadDeUsuario = new AlmacenamientoActividadDeUsuario(conexion);

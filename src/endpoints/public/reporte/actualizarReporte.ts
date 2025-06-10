@@ -5,7 +5,7 @@ import baseDatos from '../../../database';
 import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario';
 import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadas';
 import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadas';
-import ReporteParcial from '../../../resources/models/ReporteParcial';
+import ReporteParcial from '../../../resources/models/ReporteParcial'; //invoca el modelo del reporte parcial
 
 function obtenerFecha(): string {
   const fecha = new Date();
@@ -62,7 +62,7 @@ export default async function actualizarReporte(req: any, res: any) {
     const auxReporte: ReporteParcial = {
       id: nuevoReporte.id,
       idServicio: nuevoReporte.idServicio,
-      idTrimestre: nuevoReporte.idTrimestre,
+      idSemestre: nuevoReporte.idSemestre,
       actualizado: obtenerFecha(),
       horasRealizadas,
       actividadesRealizadas: [],

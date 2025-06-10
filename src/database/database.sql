@@ -8,15 +8,15 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema Servicio_Medicina
+-- Schema Servicio_Medicina_Semestral
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `Servicio_Medicina` DEFAULT CHARACTER SET utf8mb4 ;
-USE `Servicio_Medicina` ;
+CREATE SCHEMA IF NOT EXISTS `Servicio_Medicina_Semestral` DEFAULT CHARACTER SET utf8mb4 ;
+USE `Servicio_Medicina_Semestral` ;
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`usuario`
+-- Table `Servicio_Medicina_Semestral`.`usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`usuario` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`usuario` (
   `id` BIGINT(8) NOT NULL,
   `rol` ENUM('prestador', 'interno', 'revisor', 'administrador'),
   PRIMARY KEY (`id`),
@@ -25,9 +25,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`servicio`
+-- Table `Servicio_Medicina_Semestral`.`servicio`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`servicio` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`servicio` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `usuario_id` BIGINT(8) NOT NULL,
   `entidad_receptora` VARCHAR(100),
@@ -43,16 +43,16 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`servicio` (
   INDEX `fk_servicio_usuario_idx` (`usuario_id` ASC),
   CONSTRAINT `fk_servicio_usuario`
     FOREIGN KEY (`usuario_id`)
-    REFERENCES `Servicio_Medicina`.`usuario` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`trimestre`
+-- Table `Servicio_Medicina_Semestral`.`semestre`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`trimestre` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`semestre` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `fecha_inicio` DATE NOT NULL,
   `fecha_fin` DATE NOT NULL,
@@ -62,35 +62,35 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`reporte_parcial`
+-- Table `Servicio_Medicina_Semestral`.`reporte_parcial`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_parcial` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`reporte_parcial` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `servicio_id` INT NOT NULL,
   `actualizado` DATE,
   `horas_realizadas` INT,
-  `trimestre_id` INT NOT NULL,
+  `semestre_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_reporte_parcial_servicio1_idx` (`servicio_id` ASC),
-  INDEX `fk_reporte_parcial_trimestre1_idx` (`trimestre_id` ASC),
+  INDEX `fk_reporte_parcial_semestre1_idx` (`semestre_id` ASC),
   CONSTRAINT `fk_reporte_parcial_servicio1`
     FOREIGN KEY (`servicio_id`)
-    REFERENCES `Servicio_Medicina`.`servicio` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`servicio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_reporte_parcial_trimestre1`
-    FOREIGN KEY (`trimestre_id`)
-    REFERENCES `Servicio_Medicina`.`trimestre` (`id`)
+  CONSTRAINT `fk_reporte_parcial_semestre1`
+    FOREIGN KEY (`semestre_id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`semestre` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`actividad_de_usuario`
+-- Table `Servicio_Medicina_Semestral`.`actividad_de_usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_de_usuario` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`actividad_de_usuario` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `descripcion` TEXT,
   `servicio_id` INT NOT NULL,
@@ -99,16 +99,16 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_de_usuario` (
   INDEX `fk_actividad_de_usuario_servicio1_idx` (`servicio_id` ASC),
   CONSTRAINT `fk_actividad_de_usuario_servicio1`
     FOREIGN KEY (`servicio_id`)
-    REFERENCES `Servicio_Medicina`.`servicio` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`servicio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`actividad_realizada`
+-- Table `Servicio_Medicina_Semestral`.`actividad_realizada`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_realizada` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`actividad_realizada` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `cantidad` INT,
   `actividad_de_usuario_id` INT NOT NULL,
@@ -119,21 +119,21 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_realizada` (
   INDEX `fk_actividad_realizada_reporte_parcial1_idx` (`reporte_parcial_id` ASC),
   CONSTRAINT `fk_actividad_realizada_actividad_de_usuario1`
     FOREIGN KEY (`actividad_de_usuario_id`)
-    REFERENCES `Servicio_Medicina`.`actividad_de_usuario` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`actividad_de_usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_actividad_realizada_reporte_parcial1`
     FOREIGN KEY (`reporte_parcial_id`)
-    REFERENCES `Servicio_Medicina`.`reporte_parcial` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`reporte_parcial` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`atencion_realizada`
+-- Table `Servicio_Medicina_Semestral`.`atencion_realizada`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`atencion_realizada` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`atencion_realizada` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipo` INT,
   `cantidad` INT,
@@ -145,21 +145,21 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`atencion_realizada` (
   INDEX `fk_atencion_realizada_reporte_parcial1_idx` (`reporte_parcial_id` ASC),
   CONSTRAINT `fk_atencion_realizada_usuario1`
     FOREIGN KEY (`usuario_id`)
-    REFERENCES `Servicio_Medicina`.`usuario` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_atencion_realizada_reporte_parcial1`
     FOREIGN KEY (`reporte_parcial_id`)
-    REFERENCES `Servicio_Medicina`.`reporte_parcial` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`reporte_parcial` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`reporte_final`
+-- Table `Servicio_Medicina_Semestral`.`reporte_final`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_final` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina_Semestral`.`reporte_final` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `servicio_id` INT NOT NULL,
   `metas_alcanzadas` TEXT,
@@ -172,10 +172,20 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_final` (
   INDEX `fk_reporte_final_servicio1_idx` (`servicio_id` ASC),
   CONSTRAINT `fk_reporte_final_servicio1`
     FOREIGN KEY (`servicio_id`)
-    REFERENCES `Servicio_Medicina`.`servicio` (`id`)
+    REFERENCES `Servicio_Medicina_Semestral`.`servicio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `semestre`
+-- -----------------------------------------------------
+/*INSERT INTO semestre (fecha_inicio, fecha_fin) VALUES
+('2021-02-01', '2021-07-31'),
+('2021-08-01', '2022-01-31'),
+('2022-02-01', '2022-07-31'),
+('2022-08-01', '2023-01-31');*/
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
