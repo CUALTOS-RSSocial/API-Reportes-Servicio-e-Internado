@@ -8,7 +8,7 @@ export default async function crearReporteFinalDos(req: any, res: any) {
   try {
     const parciales: ReporteParcial[] = await baseDatos
       .almacenamientoReporteParcial.obtenerReportesPorIdServicio(usuario.idServicio);
-    if (parciales.length !== 4) {
+    if (parciales.length !== 2) {
       return res.status(400).send({ code: 'Error: reportes parciales no completados' });
     }
 

@@ -53,12 +53,12 @@ export default class AlmacenamientoSemestre {
     }
 
     public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Semestre[]> {
-      const consulta = 'SELECT * FROM semeste '
-      + 'WHERE semestre.fecha_inicio BETWEEN ? AND ? '
-      + 'AND semestre.fecha_fin BETWEEN ? AND ? ';
+      const consulta = 'SELECT * FROM semestre ' //Cambio para que los semestres que se crucen con el servicio
+      + 'WHERE fecha_fin >= ? AND fecha_inicio <= ? '
+      'ORDER BY fecha_inicio ASC';
       const datos: Semestre[] = [];
-      const args = [
-        fechaInicio, fechaFin, fechaInicio, fechaFin,
+      const args = [ //Si son para semestres, solo ocupa dos, si es trimestre cuatro
+        fechaInicio, fechaFin, /*fechaInicio, fechaFin,*/ 
       ];
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
