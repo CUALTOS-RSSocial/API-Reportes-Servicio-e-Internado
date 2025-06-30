@@ -5,7 +5,7 @@ const config = {
   database: {
     user: 'root',
     password: 'dolphR0ot',
-    name: 'servicio_medicina_semestral',
+    name: 'servicio_medicina',
   },
   autenticacion: {
     algoritmo: process.env.ALGORITMO_AUTENTICACION || 'HS256',

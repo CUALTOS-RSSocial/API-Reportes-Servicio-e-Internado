@@ -8,7 +8,7 @@
 import baseDatos from '../../../database';
 import Servicio from '../../../resources/models/Servicio';
 import SolicitudPersonalizada from '../../../resources/models/Request';
-import Semestre from '../../../resources/models/Semestre';
+import Trimestre from '../../../resources/models/Trimestre';
 
 export default async function obtenerCompleto(req: SolicitudPersonalizada, res: any) {
   let generales;
@@ -28,10 +28,10 @@ export default async function obtenerCompleto(req: SolicitudPersonalizada, res: 
 
     const reportesParciales: any[] = [];
     await Promise.all(parciales.map(async (element: any) => {
-      const semestre: Semestre = await baseDatos.almacenamientoSemestre.obtenerSemestre(element.idSemestre);
+      const trimestre: Trimestre = await baseDatos.almacenamientoTrimestre.obtenerTrimestre(element.idTrimestre);
       const reporte : any = element;
-      reporte.fechaInicio = semestre.fechaInicio;
-      reporte.fechaFin = semestre.fechaFin;
+      reporte.fechaInicio = trimestre.fechaInicio;
+      reporte.fechaFin = trimestre.fechaFin;
       reportesParciales.push(reporte);
     }));
 

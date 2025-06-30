@@ -9,7 +9,7 @@ import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario
 import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadas';
 import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadas';
 import DatosGeneralesServicio from '../../../resources/models/DatosGeneralesServicio';
-import Semestre from '../../../resources/models/Semestre';
+import Trimestre from '../../../resources/models/Trimestre';
 import ReporteParcial from '../../../resources/models/ReporteParcial'; //invoca el modelo de reporte parcial
 
 function obtenerFecha(): string {
@@ -35,7 +35,7 @@ export default async function crearReporte(req: any, res: any) {
   let atencionesRealizadas: any[] = [];
   let horasRealizadas = 0;
   let servicio: DatosGeneralesServicio;
-  let semestres: Semestre[] = [];
+  let trimestres: Trimestre[] = [];
   let reportes: ReporteParcial[] = [];
   let nuevoReporte: ReporteParcial;
 
@@ -60,12 +60,12 @@ export default async function crearReporte(req: any, res: any) {
     return res.status(500).send({ code: 'ERROR_DE_BASE_DE_DATOS' });
   }
 
-  // 3.- Obtener los semestres de este servicio
+  // 3.- Obtener los trimestres de este servicio
   try {
-    semestres = await baseDatos.almacenamientoSemestre
+    trimestres = await baseDatos.almacenamientoTrimestre
       .obtenerPorFechas(servicio.fechaInicio, servicio.fechaFin);
   } catch (err) {
-    return res.status(500).send({ code: 'ERROR_AL_OBTENER_SEMESTRES' });
+    return res.status(500).send({ code: 'ERROR_AL_OBTENER_TRIMESTRES' });
   }
 
   try {
@@ -81,8 +81,8 @@ export default async function crearReporte(req: any, res: any) {
       return res.status(404).send({ code: 'NUMERO_DE_REPORTE_NO_VALIDO' });
     }
 
-    if (semestres.length < reportes.length + 1) { // No existe semestre para este reporte
-      return res.status(404).send({ code: 'EL_SEMESTRE_CORRESPONDIENTE_NO_EXISTE: Revisa las fechas del servicio' });
+    if (trimestres.length < reportes.length + 1) { // No existe trimestre para este reporte
+      return res.status(404).send({ code: 'EL_TRIMESTRE_CORRESPONDIENTE_NO_EXISTE: Revisa las fechas del servicio' });
     }
 
     if (Number(req.params.numeroReporte) === reportes.length) { // El anterior tiene que estar creado
@@ -93,8 +93,8 @@ export default async function crearReporte(req: any, res: any) {
       return res.status(404).send({ code: 'EL_REPORTE_ANTERIOR_NO_HA_SIDO_CREADO' });
     }
 
-    // El reporte se debe crear en una fecha igual o posterior al fin de su semestre
-    if (!esFechaPosterior(obtenerFecha(), semestres[reportes.length].fechaFin)) {
+    // El reporte se debe crear en una fecha igual o posterior al fin de su trimestre
+    if (!esFechaPosterior(obtenerFecha(), trimestres[reportes.length].fechaFin)) {
       return res.status(404).send({ code: 'AUN_NO_PUEDES_REALIZAR_ESTE_REPORTE' });
     }
 
@@ -102,12 +102,12 @@ export default async function crearReporte(req: any, res: any) {
     const dummy: ActividadesRealizadas[] = []; // Necesarios en la interfaz, pero no para la DB
     const dummy2: AtencionesRealizadas[] = []; // En la inserción son ignorados.
 
-    const idSemestre = semestres[reportes.length].id;
+    const idTrimestre = trimestres[reportes.length].id;
 
     nuevoReporte = {
       id: 0,
       idServicio,
-      idSemestre,
+      idTrimestre,
       actualizado,
       horasRealizadas,
       actividadesRealizadas: dummy,

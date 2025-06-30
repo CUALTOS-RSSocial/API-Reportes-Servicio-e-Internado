@@ -62,7 +62,7 @@ export default async function actualizarReporte(req: any, res: any) {
     const auxReporte: ReporteParcial = {
       id: nuevoReporte.id,
       idServicio: nuevoReporte.idServicio,
-      idSemestre: nuevoReporte.idSemestre,
+      idTrimestre: nuevoReporte.idTrimestre,
       actualizado: obtenerFecha(),
       horasRealizadas,
       actividadesRealizadas: [],
