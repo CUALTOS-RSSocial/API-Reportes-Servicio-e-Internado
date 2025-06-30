@@ -1,71 +1,72 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-useless-catch */
 import mysql = require('mysql');
-import Semestre from '../resources/models/Semestre'; //Invoca el modelo de semestre
+import Trimestre from '../resources/models/Trimestre'; 
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado'; //Si no encuentra algo, manda este error (any)
 
-export default class AlmacenamientoSemestre {
+export default class AlmacenamientoTrimestre {
     private conexion: mysql.Pool;
 
     constructor(con: mysql.Pool) {
       this.conexion = con;
     }
     
-    async crearSemestre(semestre: Semestre): Promise<Semestre> { //Esto afecta la carpeta de chrono-trigger/jobs
-      const consulta = 'INSERT INTO semestre(fecha_inicio, fecha_fin) VALUES (?, ?)'; //afecta la bd
+    async crearTrimestre(trimestre: Trimestre): Promise<Trimestre> { //Esto afecta la carpeta de chrono-trigger/jobs
+      const consulta = 'INSERT INTO trimestre(fecha_inicio, fecha_fin) VALUES (?, ?)'; //afecta la bd
       const args = [
-        semestre.fechaInicio,
-        semestre.fechaFin,
+        trimestre.fechaInicio,
+        trimestre.fechaFin,
       ];
-      const promesaSemestre: any = await new Promise((resolve, reject) => {
+      const promesaTrimestre: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else {
-            const nuevoSemestre = semestre;
-            nuevoSemestre.id = res.insertId;
-            resolve(nuevoSemestre);
+            const nuevoTrimestre = trimestre;
+            nuevoTrimestre.id = res.insertId;
+            resolve(nuevoTrimestre);
           }
         });
       });
-      return promesaSemestre;
+      return promesaTrimestre;
     }
 
-    async obtenerSemestre(id: number): Promise<Semestre> {
-      const consulta = 'SELECT * FROM semestre WHERE id=?'; //afecta la bd
-      const promesaSemestre: any = await new Promise((resolve, reject) => {
+    async obtenerTrimestre(id: number): Promise<Trimestre> {
+      const consulta = 'SELECT * FROM trimestre WHERE id=?'; //afecta la bd
+      const promesaTrimestre: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, [String(id)], (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
             reject(new ObjetoNoEncontrado());
           } else {
-            const semestre = {
+            const Trimestre = {
               id: res[0].id,
               fechaInicio: res[0].fecha_inicio,
               fechaFin: res[0].fecha_fin,
             };
-            resolve(semestre);
+            resolve(Trimestre);
           }
         });
       });
-      return promesaSemestre;
+      return promesaTrimestre;
     }
 
-    public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Semestre[]> {
-      const consulta = 'SELECT * FROM semestre ' //Cambio para que los semestres que se crucen con el servicio
-      + 'WHERE fecha_fin >= ? AND fecha_inicio <= ? '
-      'ORDER BY fecha_inicio ASC';
-      const datos: Semestre[] = [];
+    public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Trimestre[]> {
+     const consulta = 'SELECT * FROM trimestre '  
+      + 'WHERE trimestre.fecha_fin >= ? AND trimestre.fecha_inicio <= ? '
+      + 'ORDER BY trimestre.fecha_inicio ASC';
+
+      const datos: Trimestre[] = [];
       const args = [ //Si son para semestres, solo ocupa dos, si es trimestre cuatro
-        fechaInicio, fechaFin, /*fechaInicio, fechaFin,*/ 
+        fechaInicio, fechaFin, /*fechaInicio, fechaFin*/,
       ];
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
-            resolve(datos);//si no hay semestres, da un array vacío
+            resolve(datos);//si no hay semestres/trimestre, da un array vacío
           } else {
             for (let i = 0; i < res.length; i += 1) {
               const aux = {
@@ -75,10 +76,11 @@ export default class AlmacenamientoSemestre {
               };
               datos.push(aux);
             }
-            resolve(datos); //retorna los semestres encontrados dentro del rango establecido
+            resolve(datos); //retorna los semestres/trimestre encontrados dentro del rango establecido
           }
         });
       });
+      
       return promise;
     }
 }
