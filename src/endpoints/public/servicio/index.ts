@@ -4,6 +4,7 @@ import crearServicio from './crearServicio';
 import actualizarServicio from './actualizarServicio';
 import obtenerCompleto from './obtenerCompleto';
 import obtenerTrimestres from './obtenerTrimestres';
+import servicioActual from './servicioActual'
 
 const express = require('express');
 
@@ -15,5 +16,6 @@ enrutadorServicio.post('/', autenticacion.jwtAutenticacion(['interno', 'prestado
 enrutadorServicio.put('/', autenticacion.jwtAutenticacion(['interno', 'prestador']), actualizarServicio);
 enrutadorServicio.get('/', autenticacion.jwtAutenticacion(['interno', 'prestador']), obtenerCompleto);
 enrutadorServicio.get('/trimestres', autenticacion.jwtAutenticacion(['interno', 'prestador']), obtenerTrimestres);
+enrutadorServicio.get('/servicioActual/:usuario', servicioActual);
 
 export default enrutadorServicio;
