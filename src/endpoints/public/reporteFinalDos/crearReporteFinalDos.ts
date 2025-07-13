@@ -8,8 +8,22 @@ export default async function crearReporteFinalDos(req: any, res: any) {
   try {
     const parciales: ReporteParcial[] = await baseDatos
       .almacenamientoReporteParcial.obtenerReportesPorIdServicio(usuario.idServicio);
-    if (parciales.length !== 2) {
-      return res.status(400).send({ code: 'Error: reportes parciales no completados' });
+
+    //Se obtiene la información del servicio del usuario, para obtener la fecha de inicio
+    const servicio = await baseDatos.almacenamientoServicioGeneral.obtenerServicioGeneral(usuario);
+
+    //Aseguramiento de la comparación de las fechas del servicio 
+    const fechaLimite = new Date('2025-02-01');
+    const fechaInicio = new Date(servicio.fechaInicio);
+
+    if (fechaInicio >= fechaLimite){
+      if (parciales.length !== 2) {
+        return res.status(400).send({ code: 'Error: reportes parciales no completados' });
+      }
+    }else{
+      if (parciales.length !== 4) {
+        return res.status(400).send({ code: 'Error: reportes parciales no completados' });
+      }
     }
 
     const nuevoReporteFinalDos = await baseDatos

@@ -74,10 +74,14 @@ export default async function crearReporte(req: any, res: any) {
     return res.status(500).send({ code: 'ERROR_AL_OBTENER_REPORTES' });
   }
 
-  // 4.- Obtener los reportes ya creados y crear el nuevo reporte.
+  // Antes del "4.-". Si es posterior a la fecha límite, es semestral (2 reportes), si no es trimestral (4 reportes).
+  const fechaLimite = new Date('2025-02-01');
+  const fechaInicio = new Date(servicio.fechaInicio);
+  const reportesEsperados = fechaInicio >= fechaLimite ? 2 : 4; 
 
+  // 4.- Obtener los reportes ya creados y crear el nuevo reporte.
   try {
-    if (reportes.length >= 2) {
+    if (reportes.length >= reportesEsperados) {
       return res.status(404).send({ code: 'NUMERO_DE_REPORTE_NO_VALIDO' });
     }
 
