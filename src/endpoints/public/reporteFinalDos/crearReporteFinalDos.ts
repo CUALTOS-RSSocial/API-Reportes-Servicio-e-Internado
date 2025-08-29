@@ -20,10 +20,8 @@ export default async function crearReporteFinalDos(req: any, res: any) {
       if (parciales.length !== 2) {
         return res.status(400).send({ code: 'Error: reportes parciales no completados' });
       }
-    }else{
-      if (parciales.length !== 4) {
+    }else if (parciales.length !== 4) {
         return res.status(400).send({ code: 'Error: reportes parciales no completados' });
-      }
     }
 
     const nuevoReporteFinalDos = await baseDatos

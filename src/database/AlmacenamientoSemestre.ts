@@ -1,63 +1,63 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-useless-catch */
 import mysql = require('mysql');
-import Trimestre from '../resources/models/Trimestre'; 
+import Semestre from '../resources/models/Semestre'; 
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado'; //Si no encuentra algo, manda este error (any)
 
-export default class AlmacenamientoTrimestre {
+export default class AlmacenamientoSemestre {
     private conexion: mysql.Pool;
 
     constructor(con: mysql.Pool) {
       this.conexion = con;
     }
     
-    async crearTrimestre(trimestre: Trimestre): Promise<Trimestre> { //Esto afecta la carpeta de chrono-trigger/jobs
-      const consulta = 'INSERT INTO trimestre(fecha_inicio, fecha_fin) VALUES (?, ?)'; //afecta la bd
+    async crearSemestre(semestre: Semestre): Promise<Semestre> { //Esto afecta la carpeta de chrono-trigger/jobs
+      const consulta = 'INSERT INTO semestre(fecha_inicio, fecha_fin) VALUES (?, ?)'; //afecta la bd
       const args = [
-        trimestre.fechaInicio,
-        trimestre.fechaFin,
+        semestre.fechaInicio,
+        semestre.fechaFin,
       ];
-      const promesaTrimestre: any = await new Promise((resolve, reject) => {
+      const promesaSemestre: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
           } else {
-            const nuevoTrimestre = trimestre;
-            nuevoTrimestre.id = res.insertId;
-            resolve(nuevoTrimestre);
+            const nuevoSemestre = semestre;
+            nuevoSemestre.id = res.insertId;
+            resolve(nuevoSemestre);
           }
         });
       });
-      return promesaTrimestre;
+      return promesaSemestre;
     }
 
-    async obtenerTrimestre(id: number): Promise<Trimestre> {
-      const consulta = 'SELECT * FROM trimestre WHERE id=?'; //afecta la bd
-      const promesaTrimestre: any = await new Promise((resolve, reject) => {
+    async obtenerSemestre(id: number): Promise<Semestre> {
+      const consulta = 'SELECT * FROM semestre WHERE id=?'; //afecta la bd
+      const promesaSemestre: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, [String(id)], (err, res) => {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
             reject(new ObjetoNoEncontrado());
           } else {
-            const Trimestre = {
+            const Semestre = {
               id: res[0].id,
               fechaInicio: res[0].fecha_inicio,
               fechaFin: res[0].fecha_fin,
             };
-            resolve(Trimestre);
+            resolve(Semestre);
           }
         });
       });
-      return promesaTrimestre;
+      return promesaSemestre;
     }
 
-    public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Trimestre[]> {
-     const consulta = 'SELECT * FROM trimestre '  
-      + 'WHERE trimestre.fecha_fin >= ? AND trimestre.fecha_inicio <= ? '
-      + 'ORDER BY trimestre.fecha_inicio ASC';
+    public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Semestre[]> {
+       const consulta = 'SELECT * FROM semestre '  
+      + 'WHERE semestre.fecha_fin >= ? AND semestre.fecha_inicio <= ? '
+      + 'ORDER BY semestre.fecha_inicio ASC';
 
-      const datos: Trimestre[] = [];
+      const datos: Semestre[] = [];
       const args = [ //Si son para semestres, solo ocupa dos, si es trimestre cuatro
         fechaInicio, fechaFin, /*fechaInicio, fechaFin*/,
       ];
@@ -77,7 +77,7 @@ export default class AlmacenamientoTrimestre {
               datos.push(aux);
             }
             resolve(datos); //retorna los semestres/trimestre encontrados dentro del rango establecido
-          }
+          } 
         });
       });
       

@@ -7,7 +7,7 @@ import AtencionesRealizadas from './AtencionesRealizadas';
 export default interface ReporteParcial {
     id: number;
     idServicio: number;
-    idTrimestre: number;
+    idSemestre: number;
     actualizado: string;
     horasRealizadas: number;
     actividadesRealizadas: ActividadesRealizadas[];

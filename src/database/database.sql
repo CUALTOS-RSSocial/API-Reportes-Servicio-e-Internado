@@ -50,9 +50,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Servicio_Medicina`.`trimestre`
+-- Table `Servicio_Medicina`.`semestre`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`trimestre` (
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`semestre` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `fecha_inicio` DATE NOT NULL,
   `fecha_fin` DATE NOT NULL,
@@ -69,19 +69,19 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_parcial` (
   `servicio_id` INT NOT NULL,
   `actualizado` DATE,
   `horas_realizadas` INT,
-  `trimestre_id` INT NOT NULL,
+  `semestre_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_reporte_parcial_servicio1_idx` (`servicio_id` ASC),
-  INDEX `fk_reporte_parcial_trimestre1_idx` (`trimestre_id` ASC),
+  INDEX `fk_reporte_parcial_semestre1_idx` (`semestre_id` ASC),
   CONSTRAINT `fk_reporte_parcial_servicio1`
     FOREIGN KEY (`servicio_id`)
     REFERENCES `Servicio_Medicina`.`servicio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_reporte_parcial_trimestre1`
-    FOREIGN KEY (`trimestre_id`)
-    REFERENCES `Servicio_Medicina`.`trimestre` (`id`)
+  CONSTRAINT `fk_reporte_parcial_semestre1`
+    FOREIGN KEY (`semestre_id`)
+    REFERENCES `Servicio_Medicina`.`semestre` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

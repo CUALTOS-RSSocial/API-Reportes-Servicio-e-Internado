@@ -8,14 +8,14 @@
 
 import database from '../../database'; 
 import _CronJob from '../../resources/models/CronJob'; //invoca los trabajos automatizados
-import Trimestre from '../../resources/models/Trimestre'; //invoca el modelo del trimestre
+import Semestre from '../../resources/models/Semestre'; //invoca el modelo del trimestre
 
 function obtenerAnio(): number {
   const fecha = new Date();
   return fecha.getFullYear();
 }
 
-async function crearTrimestres() {
+/*async function crearTrimestres() {
   try {
     const anio = obtenerAnio();
     // Crear trimestre 1
@@ -55,12 +55,43 @@ async function crearTrimestres() {
 
   // eslint-disable-next-line no-console
   console.log('Se crearon todos los trimestres del año con exito');
+}*/
+
+async function crearSemestres(){
+  try{
+    const anioS = obtenerAnio();
+    
+    // Crear semestre 1 
+    const semestreUno: Semestre = {
+      id: 0, // dummy
+      fechaInicio: `${anioS}-02-01`,
+      fechaFin: `${anioS}-06-30`,
+    };
+    await database.almacenamientoSemestre.crearSemestre(semestreUno);
+    
+    // Crear semestre 2 
+    const anioS2 = anioS + 1;
+    const semestreDos: Semestre = {
+      id: 0, // dummy
+      fechaInicio: `${anioS}-07-01`,
+      fechaFin: `${anioS2}-01-31`,
+    };
+    await database.almacenamientoSemestre.crearSemestre(semestreDos);
+
+  }catch(err){
+    // eslint-disable-next-line no-console
+    console.log('ERROR: TAREA NO COMPLETADA, NO SE PUDIERON CREAR LOS SEMESTRES.');
+    throw err;
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('Se crearon todos los semestres del año con exito');
 }
 
 const cronJob: _CronJob = {
   cron: '0 0 1 1 *', // minuto 0, de la hora 0, del día 1 del mes 1 de cualquier año
   job: () => {
-    crearTrimestres();
+    crearSemestres();
   },
 };
 
