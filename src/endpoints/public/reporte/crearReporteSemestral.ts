@@ -6,11 +6,11 @@
 import baseDatos from '../../../database';
 import ObjetoNoEncontrado from '../../../database/errors/ObjetoNoEncontrado';
 import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario';
-import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadas';
-import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadas';
+import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadasSemestral';
+import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadasSemestral';
 import DatosGeneralesServicio from '../../../resources/models/DatosGeneralesServicio';
-import Trimestre from '../../../resources/models/Trimestre';
-import ReporteParcial from '../../../resources/models/ReporteParcial'; 
+import Semestre from '../../../resources/models/Semestre';
+import ReporteParcial from '../../../resources/models/ReporteParcialSemestral'; 
 
 function obtenerFecha(): string {
   const fecha = new Date();
@@ -35,7 +35,7 @@ export default async function crearReporte(req: any, res: any) {
   let atencionesRealizadas: any[] = [];
   let horasRealizadas = 0;
   let servicio: DatosGeneralesServicio;
-  let trimestres: Trimestre[] = [];
+  let semestres: Semestre[] = [];
   let reportes: ReporteParcial[] = [];
   let nuevoReporte: ReporteParcial;
 
@@ -60,29 +60,28 @@ export default async function crearReporte(req: any, res: any) {
     return res.status(500).send({ code: 'ERROR_DE_BASE_DE_DATOS' });
   }
 
-  // 3.- Obtener los trimestres de este servicio
+  // 3.- Obtener los semestres de este servicio
   try {
-    trimestres = await baseDatos.almacenamientoTrimestre
+    semestres = await baseDatos.almacenamientoSemestre
       .obtenerPorFechas(servicio.fechaInicio, servicio.fechaFin);
   } catch (err) {
     return res.status(500).send({ code: 'ERROR_AL_OBTENER_LAS_FECHAS' });
   }
 
   try {
-    reportes = await baseDatos.almacenamientoReporteParcial.obtenerReportesPorIdUsuario(idUsuario);
+    reportes = await baseDatos.almacenamientoReporteParcialSemestral.obtenerReportesPorIdUsuario(idUsuario);
   } catch (err) {
     return res.status(500).send({ code: 'ERROR_AL_OBTENER_REPORTES' });
   }
 
-  //console.log('Solicitud recibida:', reportes);
   // 4.- Obtener los reportes ya creados y crear el nuevo reporte.
   try {
-    if (reportes.length >= 4) {
+    if (reportes.length >= 2) {
       return res.status(404).send({ code: 'NUMERO_DE_REPORTE_NO_VALIDO' });
     }
 
-    if (trimestres.length < reportes.length + 1) { // No existe trimestre para este reporte
-      return res.status(404).send({ code: 'EL_TRIMESTRE_CORRESPONDIENTE_NO_EXISTE: Revisa las fechas del servicio' });
+    if (semestres.length < reportes.length + 1) { // No existe semestre para este reporte
+      return res.status(404).send({ code: 'EL_SEMESTRE_CORRESPONDIENTE_NO_EXISTE: Revisa las fechas del servicio' });
     }
 
     if (Number(req.params.numeroReporte) === reportes.length) { // El anterior tiene que estar creado
@@ -93,8 +92,8 @@ export default async function crearReporte(req: any, res: any) {
       return res.status(404).send({ code: 'EL_REPORTE_ANTERIOR_NO_HA_SIDO_CREADO' });
     }
 
-    // El reporte se debe crear en una fecha igual o posterior al fin de su trimestre
-    if (!esFechaPosterior(obtenerFecha(), trimestres[reportes.length].fechaFin)) {
+    // El reporte se debe crear en una fecha igual o posterior al fin de su semestre
+    if (!esFechaPosterior(obtenerFecha(), semestres[reportes.length].fechaFin)) {
       return res.status(404).send({ code: 'AUN_NO_PUEDES_REALIZAR_ESTE_REPORTE' });
     }
 
@@ -102,19 +101,19 @@ export default async function crearReporte(req: any, res: any) {
     const dummy: ActividadesRealizadas[] = []; 
     const dummy2: AtencionesRealizadas[] = []; 
 
-    const idTrimestre = trimestres[reportes.length].id;
+    const idSemestre = semestres[reportes.length].id;
 
     nuevoReporte = {
       id: 0,
       idServicio,
-      idTrimestre,
+      idSemestre,
       actualizado,
       horasRealizadas,
       actividadesRealizadas: dummy,
       atencionesRealizadas: dummy2,
     };
 
-    nuevoReporte = await baseDatos.almacenamientoReporteParcial.crearReporteParcial(nuevoReporte);
+    nuevoReporte = await baseDatos.almacenamientoReporteParcialSemestral.crearReporteParcial(nuevoReporte);
   } catch (err) {
     if (err.errno === 1366) {
       return res.status(404).send({ codigo: 'DATOS_INVALIDOS' });
@@ -130,14 +129,14 @@ export default async function crearReporte(req: any, res: any) {
     for (let i = 0; i < atencionesRealizadas.length; i += 1) {
       let nuevaAtencion: AtencionesRealizadas = {
         id: 0,
-        idReporteParcial: idNuevoReporte,
+        idReporteParcialSemestral: idNuevoReporte,
         idUsuario,
         tipo: i,
         cantidad: atencionesRealizadas[i].cantidad,
       };
 
-      nuevaAtencion = await baseDatos.almacenamientoAtencionRealizada
-        .crearAtencionRealizada(nuevaAtencion); 
+      nuevaAtencion = await baseDatos.almacenamientoAtencionRealizadaSemestral
+        .crearAtencionRealizada(nuevaAtencion); // Se almacena por cuestión de la promesa, aunque no se vuelve a usuar.
 
       nuevoReporte.atencionesRealizadas.push(nuevaAtencion);
     }
@@ -168,11 +167,11 @@ export default async function crearReporte(req: any, res: any) {
       let nuevaRealizada: ActividadesRealizadas = {
         id: 0,
         idActividad: idActividadDeUsuario,
-        idReporteParcial: nuevoReporte.id,
+        idReporteParcialSemestral: nuevoReporte.id,
         cantidad: actividadesDeUsuario[i].cantidad,
       };
 
-      nuevaRealizada = await baseDatos.almacenamientoActividadRealizada
+      nuevaRealizada = await baseDatos.almacenamientoActividadRealizadaSemestral
         .crearActividadRealizada(nuevaRealizada);
       nuevoReporte.actividadesRealizadas.push(nuevaRealizada);
     }

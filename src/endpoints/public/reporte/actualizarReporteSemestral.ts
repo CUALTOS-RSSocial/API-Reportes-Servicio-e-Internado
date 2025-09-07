@@ -3,9 +3,9 @@
 /* eslint-disable max-len */
 import baseDatos from '../../../database';
 import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario';
-import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadas';
-import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadas';
-import ReporteParcial from '../../../resources/models/ReporteParcial'; 
+import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadasSemestral';
+import AtencionesRealizadas from '../../../resources/models/AtencionesRealizadasSemestral';
+import ReporteParcial from '../../../resources/models/ReporteParcialSemestral'; 
 
 function obtenerFecha(): string {
   const fecha = new Date();
@@ -35,7 +35,7 @@ export default async function actualizarReporte(req: any, res: any) {
     horasRealizadas = req.body.horasRealizadas;
     numeroReporte = req.params.numeroReporte;
 
-    if (numeroReporte < 1 || numeroReporte > 4) {
+    if (numeroReporte < 1 || numeroReporte > 2) {
       return res.status(404).send({ code: 'NUMERO_REPORTE_NO_VALIDO' });
     }
   } catch (err) {
@@ -53,7 +53,7 @@ export default async function actualizarReporte(req: any, res: any) {
 
   // 3.- Actualizar reporte
   try {
-    const reportes = await baseDatos.almacenamientoReporteParcial.obtenerReportesPorIdUsuario(idUsuario);
+    const reportes = await baseDatos.almacenamientoReporteParcialSemestral.obtenerReportesPorIdUsuario(idUsuario);
     if (reportes.length < numeroReporte) {
       return res.status(404).send({ code: 'REPORTE_NO_ENCONTRADO' });
     }
@@ -62,14 +62,14 @@ export default async function actualizarReporte(req: any, res: any) {
     const auxReporte: ReporteParcial = {
       id: nuevoReporte.id,
       idServicio: nuevoReporte.idServicio,
-      idTrimestre: nuevoReporte.idTrimestre,
+      idSemestre: nuevoReporte.idSemestre,
       actualizado: obtenerFecha(),
       horasRealizadas,
       actividadesRealizadas: [],
       atencionesRealizadas: [],
     };
 
-    nuevoReporte = await baseDatos.almacenamientoReporteParcial.actualizarReporteParcial(auxReporte);
+    nuevoReporte = await baseDatos.almacenamientoReporteParcialSemestral.actualizarReporteParcial(auxReporte);
   } catch (err) {
     if (err.errno === 1292) {
       return res.status(404).send({ codigo: 'DATOS_INVALIDOS' });
@@ -80,8 +80,8 @@ export default async function actualizarReporte(req: any, res: any) {
 
   // 4.- Eliminar actividades realizadas y atenciones realizadas anteriores
   try {
-    await baseDatos.almacenamientoActividadRealizada.eliminarActividadesDeReporte(nuevoReporte.id);
-    await baseDatos.almacenamientoAtencionRealizada.eliminarAtencionesDeReporte(nuevoReporte.id);
+    await baseDatos.almacenamientoActividadRealizadaSemestral.eliminarActividadesDeReporte(nuevoReporte.id);
+    await baseDatos.almacenamientoAtencionRealizadaSemestral.eliminarAtencionesDeReporte(nuevoReporte.id);
   } catch (err) {
     return res.status(500).send({ code: 'ERROR_AL_ELIMINAR_ACTIVIDADES_Y_ATENCIONES' });
   }
@@ -92,14 +92,14 @@ export default async function actualizarReporte(req: any, res: any) {
     for (let i = 0; i < atencionesRealizadas.length; i += 1) {
       let nuevaAtencion: AtencionesRealizadas = {
         id: 0,
-        idReporteParcial: idNuevoReporte,
+        idReporteParcialSemestral: idNuevoReporte,
         idUsuario,
         tipo: i,
         cantidad: atencionesRealizadas[i].cantidad,
       };
 
-      nuevaAtencion = await baseDatos.almacenamientoAtencionRealizada
-        .crearAtencionRealizada(nuevaAtencion); 
+      nuevaAtencion = await baseDatos.almacenamientoAtencionRealizadaSemestral
+        .crearAtencionRealizada(nuevaAtencion); // Se almacena por cuestión de la promesa, aunque no se vuelve a usuar.
       nuevoReporte.atencionesRealizadas.push(nuevaAtencion);
     }
   } catch (err) {
@@ -131,11 +131,11 @@ export default async function actualizarReporte(req: any, res: any) {
       let nuevaRealizada: ActividadesRealizadas = {
         id: 0,
         idActividad: idActividadDeUsuario,
-        idReporteParcial: nuevoReporte.id,
+        idReporteParcialSemestral: nuevoReporte.id,
         cantidad: actividadesDeUsuario[i].cantidad,
       };
 
-      nuevaRealizada = await baseDatos.almacenamientoActividadRealizada
+      nuevaRealizada = await baseDatos.almacenamientoActividadRealizadaSemestral
         .crearActividadRealizada(nuevaRealizada);
       nuevoReporte.actividadesRealizadas.push(nuevaRealizada);
     }

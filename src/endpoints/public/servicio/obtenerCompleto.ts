@@ -9,6 +9,7 @@ import baseDatos from '../../../database';
 import Servicio from '../../../resources/models/Servicio';
 import SolicitudPersonalizada from '../../../resources/models/Request';
 import Semestre from '../../../resources/models/Semestre';
+import Trimestre from '../../../resources/models/Trimestre';
 
 export default async function obtenerCompleto(req: SolicitudPersonalizada, res: any) {
   let generales;
@@ -24,14 +25,32 @@ export default async function obtenerCompleto(req: SolicitudPersonalizada, res: 
   }
 
   try {
-    const parciales = await baseDatos.almacenamientoReporteParcial.obtenerReportesPorIdUsuario(req.usuario.id);
+    //Aseguramiento de la comparación de las fechas del servicio 
+    const fechaLimite = new Date('2025-02-01');
+    const fechaInicio = new Date(generales.fechaInicio);
+
+    const parciales = fechaInicio >= fechaLimite
+      ? await baseDatos.almacenamientoReporteParcialSemestral.obtenerReportesPorIdUsuario(req.usuario.id)
+      : await baseDatos.almacenamientoReporteParcial.obtenerReportesPorIdUsuario(req.usuario.id);
 
     const reportesParciales: any[] = [];
     await Promise.all(parciales.map(async (element: any) => {
-      const semestre: Semestre = await baseDatos.almacenamientoSemestre.obtenerSemestre(element.idSemestre);
-      const reporte : any = element;
-      reporte.fechaInicio = semestre.fechaInicio;
-      reporte.fechaFin = semestre.fechaFin;
+      const periodo: Semestre | Trimestre = fechaInicio >= fechaLimite
+        ? await baseDatos.almacenamientoSemestre.obtenerSemestre(element.idSemestre)
+        : await baseDatos.almacenamientoTrimestre.obtenerTrimestre(element.idTrimestre);
+        
+      // Normalización: siempre devolver la misma forma
+      const reporte: any = {
+        id: element.id,
+        idServicio: element.idServicio,
+        idReporteParcial: element.idReporteParcialSemestral || element.idReporteParcial,
+        actualizado: element.actualizado,
+        horasRealizadas: element.horasRealizadas,
+        actividadesRealizadas: element.actividadesRealizadas || [], // asegura array
+        atencionesRealizadas: element.atencionesRealizadas || [],   // asegura array
+        fechaInicio: periodo.fechaInicio,
+        fechaFin: periodo.fechaFin,
+      };
       reportesParciales.push(reporte);
     }));
 

@@ -2,12 +2,12 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-useless-catch */
 import mysql = require('mysql');
-import ReporteParcial from '../resources/models/ReporteParcial'; 
+import ReporteParcial from '../resources/models/ReporteParcialSemestral'; //invoca el modelo del reporte parcial 
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
-import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada';
-import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
+import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizadaSemestral';
+import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizadaSemestral';
 
-export default class AlmacenamientoReporteParcial {
+export default class AlmacenamientoReporteParcialSemestral {
     private conexion: mysql.Pool;
 
     private actividad: AlmacenamientoActividadRealizada;
@@ -21,10 +21,10 @@ export default class AlmacenamientoReporteParcial {
     }
 
     async crearReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
-      const consulta = 'INSERT INTO reporte_parcial(servicio_id, trimestre_id, actualizado, horas_realizadas) VALUES (?, ?, ?, ?)';
+      const consulta = 'INSERT INTO reporte_parcial_semestral(servicio_id, semestre_id, actualizado, horas_realizadas) VALUES (?, ?, ?, ?)';
       const args = [
         reporteParcial.idServicio,
-        reporteParcial.idTrimestre,
+        reporteParcial.idSemestre,
         reporteParcial.actualizado,
         reporteParcial.horasRealizadas,
       ];
@@ -43,8 +43,8 @@ export default class AlmacenamientoReporteParcial {
     }
 
     public async obtenerReportesPorIdUsuario(idUsuario: number): Promise<ReporteParcial[]> {
-      const select = 'SELECT reporte_parcial.* FROM servicio '
-      + 'JOIN reporte_parcial ON reporte_parcial.servicio_id = servicio.id '
+      const select = 'SELECT reporte_parcial_semestral.* FROM servicio '
+      + 'JOIN reporte_parcial_semestral ON reporte_parcial_semestral.servicio_id = servicio.id '
       + 'WHERE servicio.usuario_id = ?';
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(select, [idUsuario], async (err, res) => {
@@ -59,7 +59,7 @@ export default class AlmacenamientoReporteParcial {
               const aux: ReporteParcial = {
                 id: res[i].id,
                 idServicio: res[i].servicio_id,
-                idTrimestre: res[i].trimestre_id,
+                idSemestre: res[i].semestre_id,
                 actualizado: res[i].actualizado,
                 horasRealizadas: res[i].horas_realizadas,
                 actividadesRealizadas: await this.actividad.obtenerPorIdReporte(res[i].id),
@@ -75,8 +75,8 @@ export default class AlmacenamientoReporteParcial {
     }
 
     public async obtenerReportesPorIdServicio(idServicio: number): Promise<ReporteParcial[]> {
-      const select = 'SELECT reporte_parcial.* FROM servicio '
-      + 'JOIN reporte_parcial ON reporte_parcial.servicio_id = servicio.id '
+      const select = 'SELECT reporte_parcial_semestral.* FROM servicio '
+      + 'JOIN reporte_parcial_semestral ON reporte_parcial_semestral.servicio_id = servicio.id '
       + 'WHERE servicio.id = ?';
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(select, [idServicio], async (err, res) => {
@@ -91,7 +91,7 @@ export default class AlmacenamientoReporteParcial {
               const aux: ReporteParcial = {
                 id: res[i].id,
                 idServicio: res[i].servicio_id,
-                idTrimestre: res[i].trimestre_id,
+                idSemestre: res[i].semestre_id,
                 actualizado: res[i].actualizado,
                 horasRealizadas: res[i].horas_realizadas,
                 actividadesRealizadas: await this.actividad.obtenerPorIdReporte(res[i].id),
@@ -107,10 +107,10 @@ export default class AlmacenamientoReporteParcial {
     }
 
     async actualizarReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
-      const consulta = 'UPDATE reporte_parcial SET servicio_id=?, trimestre_id=?, actualizado=?, horas_realizadas=? WHERE id=?';
+      const consulta = 'UPDATE reporte_parcial_semestral SET servicio_id=?, semestre_id=?, actualizado=?, horas_realizadas=? WHERE id=?';
       const args = [
         reporteParcial.idServicio,
-        reporteParcial.idTrimestre,
+        reporteParcial.idSemestre,
         reporteParcial.actualizado,
         reporteParcial.horasRealizadas,
         String(reporteParcial.id),

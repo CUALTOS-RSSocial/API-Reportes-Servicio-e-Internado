@@ -5,19 +5,27 @@ import mysql = require('mysql');
 import ReporteFinalDos from '../resources/models/ReporteFinalDos';
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada';
+import AlmacenamientoActividadRealizadaSemestral from './AlmacenamientoActividadRealizadaSemestral';
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizada';
+import AlmacenamientoAtencionRealizadaSemestral from './AlmacenamientoAtencionRealizadaSemestral';
 
 export default class AlmacenamientoReporteFinalDos {
     private conexion: mysql.Pool;
 
     private actividad: AlmacenamientoActividadRealizada;
 
+    private actividadSemestral : AlmacenamientoActividadRealizadaSemestral;
+
     private atencion: AlmacenamientoAtencionRealizada;
+
+    private atencionSemestral : AlmacenamientoAtencionRealizadaSemestral;
 
     constructor(con: mysql.Pool) {
       this.conexion = con;
       this.actividad = new AlmacenamientoActividadRealizada(con);
       this.atencion = new AlmacenamientoAtencionRealizada(con);
+      this.actividadSemestral = new AlmacenamientoActividadRealizadaSemestral(con);
+      this.atencionSemestral = new AlmacenamientoAtencionRealizadaSemestral(con);
     }
 
     async crearReporteFinalDos(reporteFinalDos: ReporteFinalDos): Promise<ReporteFinalDos> {
@@ -58,6 +66,17 @@ export default class AlmacenamientoReporteFinalDos {
             const datos = {};
             resolve(datos);
           } else {
+            const fechaLimite = new Date('2025-02-01');
+            const fechaInicio = new Date(res[0].fechaInicio);
+
+            const actividadesRealizadas = fechaInicio >= fechaLimite
+              ? await this.actividadSemestral.obtenerPorIdUsuario(idUsuario)
+              : await this.actividad.obtenerPorIdUsuario(idUsuario);
+
+            const atencionesRealizadas =  fechaInicio >= fechaLimite
+              ? await this.atencionSemestral.obtenerPorIdUsuario(idUsuario)
+              : await this.atencion.obtenerPorIdUsuario(idUsuario);
+
             const datos = {
               id: res[0].id,
               idServicio: res[0].servicio_id,
@@ -66,8 +85,8 @@ export default class AlmacenamientoReporteFinalDos {
               innovacionAportada: res[0].innovacion,
               conclusiones: res[0].conclusion,
               propuestas: res[0].propuestas,
-              actividadesRealizadas: await this.actividad.obtenerPorIdUsuario(idUsuario),
-              atencionesRealizadas: await this.atencion.obtenerPorIdUsuario(idUsuario),
+              actividadesRealizadas,
+              atencionesRealizadas,
             };
             resolve(datos);
           }

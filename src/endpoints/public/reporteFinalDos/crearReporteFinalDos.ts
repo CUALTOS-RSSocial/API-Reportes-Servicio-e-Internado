@@ -1,27 +1,26 @@
 /* eslint-disable linebreak-style */
 import baseDatos from '../../../database';
 import ReporteParcial from '../../../resources/models/ReporteParcial';
+import ReporteParcialSemestral from '../../../resources/models/ReporteParcialSemestral';
 
 export default async function crearReporteFinalDos(req: any, res: any) {
   const { usuario } = req;
 
   try {
-    const parciales: ReporteParcial[] = await baseDatos
-      .almacenamientoReporteParcial.obtenerReportesPorIdServicio(usuario.idServicio);
-
     //Se obtiene la información del servicio del usuario, para obtener la fecha de inicio
     const servicio = await baseDatos.almacenamientoServicioGeneral.obtenerServicioGeneral(usuario);
 
     //Aseguramiento de la comparación de las fechas del servicio 
     const fechaLimite = new Date('2025-02-01');
     const fechaInicio = new Date(servicio.fechaInicio);
+    const cantidadReportes = fechaInicio >= fechaLimite ? 2 : 4;
+    
+    const parciales: (ReporteParcial[] | ReporteParcialSemestral[]) = fechaInicio >= fechaLimite
+      ? await baseDatos.almacenamientoReporteParcialSemestral.obtenerReportesPorIdServicio(usuario.idServicio)
+      : await baseDatos.almacenamientoReporteParcial.obtenerReportesPorIdServicio(usuario.idServicio);
 
-    if (fechaInicio >= fechaLimite){
-      if (parciales.length !== 2) {
-        return res.status(400).send({ code: 'Error: reportes parciales no completados' });
-      }
-    }else if (parciales.length !== 4) {
-        return res.status(400).send({ code: 'Error: reportes parciales no completados' });
+    if (parciales.length !== cantidadReportes) {
+      return res.status(400).send({ code: 'Error: reportes parciales no completados' });
     }
 
     const nuevoReporteFinalDos = await baseDatos

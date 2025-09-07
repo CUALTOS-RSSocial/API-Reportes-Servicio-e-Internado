@@ -1,6 +1,7 @@
 import baseDatos from '../../../database';
 import SolicitudPersonalizada from '../../../resources/models/Request';
 import Semestre from '../../../resources/models/Semestre';
+import Trimestre from '../../../resources/models/Trimestre';
 
 export default async function obtenerCompleto(req: SolicitudPersonalizada, res: any) {
   try {
@@ -10,11 +11,19 @@ export default async function obtenerCompleto(req: SolicitudPersonalizada, res: 
     if (!generales) {
       return res.status(404).send({ code: 'SERVICIO_NO_ENCONTRADO' });
     }
-    
-    const semestres: Semestre[] = await baseDatos.almacenamientoSemestre
-      .obtenerPorFechas(generales.fechaInicio, generales.fechaFin);
 
-    return res.status(200).send(semestres);
+    //Aseguramiento de la comparación de las fechas del servicio 
+    const fechaLimite = new Date('2025-02-01');
+    const fechaInicio = new Date(generales.fechaInicio);
+
+    const resultado: (Semestre[] | Trimestre[]) = fechaInicio >= fechaLimite
+      ? await baseDatos.almacenamientoSemestre.obtenerPorFechas(generales.fechaInicio, generales.fechaFin) //Semestre
+      : await baseDatos.almacenamientoTrimestre.obtenerPorFechas(generales.fechaInicio, generales.fechaFin); //Trimestre
+    
+    /*const semestres: Semestre[] = await baseDatos.almacenamientoSemestre
+      .obtenerPorFechas(generales.fechaInicio, generales.fechaFin);*/
+
+    return res.status(200).send(resultado);
   } catch (err) {
     return res.status(500).send({ code: 'ERROR_DE_BASE_DE_DATOS' });
   }
