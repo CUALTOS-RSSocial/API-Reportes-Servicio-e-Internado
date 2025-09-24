@@ -60,6 +60,16 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`semestre` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `Servicio_Medicina`.`trimestre`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`trimestre` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `fecha_inicio` DATE NOT NULL,
+  `fecha_fin` DATE NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `Servicio_Medicina`.`reporte_parcial`
@@ -69,12 +79,37 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_parcial` (
   `servicio_id` INT NOT NULL,
   `actualizado` DATE,
   `horas_realizadas` INT,
-  `semestre_id` INT NOT NULL,
+  `trimestre_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_reporte_parcial_servicio1_idx` (`servicio_id` ASC),
-  INDEX `fk_reporte_parcial_semestre1_idx` (`semestre_id` ASC),
+  INDEX `fk_reporte_parcial_trimestre1_idx` (`trimestre_id` ASC),
   CONSTRAINT `fk_reporte_parcial_servicio1`
+    FOREIGN KEY (`servicio_id`)
+    REFERENCES `Servicio_Medicina`.`servicio` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reporte_parcial_trimestre1`
+    FOREIGN KEY (`trimestre_id`)
+    REFERENCES `Servicio_Medicina`.`trimestre` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -------------------------------------------------------
+-- Table `Servicio_Medicina`.`reporte_parcial_semestral`
+-- -------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`reporte_parcial_semestral` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `servicio_id` INT NOT NULL,
+  `actualizado` DATE,
+  `horas_realizadas` INT,
+  `semestre_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_reporte_parcial_semestral_servicio1_idx` (`servicio_id` ASC),
+  INDEX `fk_reporte_parcial_semestre1_idx` (`semestre_id` ASC),
+  CONSTRAINT `fk_reporte_parcial_semestral_servicio1`
     FOREIGN KEY (`servicio_id`)
     REFERENCES `Servicio_Medicina`.`servicio` (`id`)
     ON DELETE NO ACTION
@@ -129,6 +164,29 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_realizada` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- ----------------------------------------------------------
+-- Table `Servicio_Medicina`.`actividad_realizada_semestral`
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`actividad_realizada_semestral` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cantidad` INT,
+  `actividad_de_usuario_id` INT NOT NULL,
+  `reporte_parcial_semestral_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_actividad_realizada_actividad_de_usuario_semestral1_idx` (`actividad_de_usuario_id` ASC),
+  INDEX `fk_actividad_realizada_reporte_parcial_semestral1_idx` (`reporte_parcial_semestral_id` ASC),
+  CONSTRAINT `fk_actividad_realizada_actividad_de_usuario_semestral1`
+    FOREIGN KEY (`actividad_de_usuario_id`)
+    REFERENCES `Servicio_Medicina`.`actividad_de_usuario` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_actividad_realizada_reporte_parcial_semestral1`
+    FOREIGN KEY (`reporte_parcial_semestral_id`)
+    REFERENCES `Servicio_Medicina`.`reporte_parcial_semestral` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `Servicio_Medicina`.`atencion_realizada`
@@ -155,6 +213,30 @@ CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`atencion_realizada` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- ----------------------------------------------------------
+-- Table `Servicio_Medicina`.`atencion_realizada_semestral`
+-- ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Servicio_Medicina`.`atencion_realizada_semestral` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `tipo` INT,
+  `cantidad` INT,
+  `usuario_id` BIGINT(8) NOT NULL,
+  `reporte_parcial_semestral_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_atencion_realizada_usuario_semestral1_idx` (`usuario_id` ASC),
+  INDEX `fk_atencion_realizada_reporte_parcial_semestral1_idx` (`reporte_parcial_semestral_id` ASC),
+  CONSTRAINT `fk_atencion_realizada_usuario_semestral1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `Servicio_Medicina`.`usuario` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_atencion_realizada_reporte_parcial_semestral1`
+    FOREIGN KEY (`reporte_parcial_semestral_id`)
+    REFERENCES `Servicio_Medicina`.`reporte_parcial_semestral` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `Servicio_Medicina`.`reporte_final`
