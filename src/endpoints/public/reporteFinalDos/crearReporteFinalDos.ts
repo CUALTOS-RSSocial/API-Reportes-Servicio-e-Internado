@@ -8,7 +8,7 @@ export default async function crearReporteFinalDos(req: any, res: any) {
 
   try {
     //Se obtiene la información del servicio del usuario, para obtener la fecha de inicio
-    const servicio = await baseDatos.almacenamientoServicioGeneral.obtenerServicioGeneral(usuario);
+    const servicio = await baseDatos.almacenamientoServicioGeneral.obtenerServicioGeneral(usuario.idServicio);
 
     //Aseguramiento de la comparación de las fechas del servicio 
     const fechaLimite = new Date('2025-02-01');

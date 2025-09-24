@@ -59,7 +59,7 @@ export default class AlmacenamientoSemestre {
 
       const datos: Semestre[] = [];
       const args = [ //Si son para semestres, solo ocupa dos, si es trimestre cuatro
-        fechaInicio, fechaFin, /*fechaInicio, fechaFin*/,
+        fechaInicio, fechaFin /*fechaInicio, fechaFin*/
       ];
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {

@@ -34,12 +34,13 @@ export default class AlmacenamientoTrimestre {
 
     public async obtenerPorFechas(fechaInicio: string, fechaFin: string): Promise<Trimestre[]> {
         const consulta = 'SELECT * FROM trimestre '
-      + 'WHERE trimestre.fecha_inicio BETWEEN ? AND ? '
-      + 'AND trimestre.fecha_fin BETWEEN ? AND ? ';
+      + 'WHERE trimestre.fecha_inicio <= ?'
+      + 'AND trimestre.fecha_fin >= ? '
+      + 'ORDER BY trimestre.fecha_inicio ASC';
 
       const datos: Trimestre[] = [];
       const args = [ //Si es trimestre cuatro
-        fechaInicio, fechaFin, fechaInicio, fechaFin,
+        fechaFin, fechaInicio /*fechaInicio, fechaFin*/
       ];
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
