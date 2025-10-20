@@ -1,4 +1,9 @@
 /* eslint-disable linebreak-style */
+/*
+  Endpoint para obtener la información de un usuario dado su código.
+  Valida las credenciales del usuario contra el sistema SIIAU
+  y recupera la información del usuario desde la base de datos.
+*/
 import baseDatos from '../../../database';
 import validarSiiau from './validarSiiau';
 

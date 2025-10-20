@@ -8,12 +8,27 @@
  *
  * Escrito por Ramón Paredes Sánchez.
  */
+/* ============================================================================
+  Clase: AlmacenamientoServicioGeneral
+  ============================================================================
+  Esta clase gestiona la persistencia y recuperación de los servicios generales
+  en la tabla `servicio` de la base de datos MySQL.
+ 
+  Funcionalidades:
+  - Crear un nuevo servicio general.
+  - Obtener un servicio por su ID.
+  - Obtener un servicio a partir del ID de usuario.
+  - Actualizar los datos de un servicio existente. 
+  
+  Pertenece a la capa de acceso a datos (DAO/Store).
+ ============================================================================ */
 
 import mysql = require('mysql');
 import DatosGeneralesServicio from '../resources/models/DatosGeneralesServicio';
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
 
 export default class AlmacenamientoServicioGeneral {
+  // Conexión al pool de MySQL. Se utiliza para ejecutar queries en la base de datos.
     private conexion : mysql.Pool;
 
     constructor(con: mysql.Pool) {
@@ -36,11 +51,14 @@ export default class AlmacenamientoServicioGeneral {
         servicio.horarioHoraInicio,
         servicio.horarioHoraFin,
       ];
+      // Ejecutar la consulta de inserción
       const insertInfo: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else {
+            // Construir el objeto con el ID autogenerado
             const servicioRegistrado = {
               id: res.insertId,
               idUsuario: servicio.idUsuario,
@@ -67,10 +85,13 @@ export default class AlmacenamientoServicioGeneral {
       const selectInfo: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else if (res.length < 1) {
+            // Si no se encuentra el servicio, rechazar con ObjetoNoEncontrado
             reject(new ObjetoNoEncontrado());
           } else {
+            // Construir el objeto DatosGeneralesServicio con los datos obtenidos
             const datosServicio: DatosGeneralesServicio = {
               id: res[0].id,
               idUsuario: res[0].usuario_id,
@@ -96,10 +117,13 @@ export default class AlmacenamientoServicioGeneral {
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, [idUsuario], (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else if (res.length < 1) {
+            // No se encontró ningún servicio para este usuario
             resolve(false);
           } else {
+            // Construir el objeto DatosGeneralesServicio con los datos obtenidos
             const datos: DatosGeneralesServicio = {
               id: res[0].id,
               idUsuario: res[0].usuario_id,
@@ -120,6 +144,7 @@ export default class AlmacenamientoServicioGeneral {
     }
 
     /** Actualizar todos los valores de un campo de la tabla servicio de MySQL */
+    // Actualiza los datos de un servicio existente en la base de datos.
     public async actualizarServicioGeneral(servicio: DatosGeneralesServicio): Promise<DatosGeneralesServicio> {
       const consulta = 'UPDATE servicio SET usuario_id=?, entidad_receptora=?, receptor=?, programa=?,'
       + 'objetivos_programa=?, fecha_inicio=?, fecha_fin=?, horario_hora_inicio=?,'
@@ -136,13 +161,17 @@ export default class AlmacenamientoServicioGeneral {
         servicio.horarioHoraFin,
         servicio.id,
       ];
+      // Ejecutar la consulta de actualización
       const updateInfo: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else if (res.affectedRows < 1) {
+            // Si no se encuentra el servicio, rechazar con ObjetoNoEncontrado
             reject(new ObjetoNoEncontrado());
           } else {
+            // Retornar el objeto servicio actualizado
             resolve(servicio);
           }
         });

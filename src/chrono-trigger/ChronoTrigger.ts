@@ -6,7 +6,21 @@
  *
  * Escrito por Ramón Paredes Sánchez.
  */
-
+/*
+  ChronoTrigger
+  ============================================================================
+  Esta clase actúa como **gestor centralizado de cron jobs**.
+  
+  Permite:
+  - Registrar múltiples tareas programadas al iniciar la aplicación.
+  - Ejecutarlas automáticamente según la expresión CRON definida.
+  
+  Internamente utiliza:
+  - `node-schedule` → Librería de Node.js para programar tareas en base a CRON.
+  
+  Ejemplo de expresión CRON: `0 0 1 1 *`
+  -> Se ejecuta a las 00:00 hrs, el 1 de enero de cada año.
+ */
 import _CronJob from '../resources/models/CronJob';
 
 const schedule = require('node-schedule');

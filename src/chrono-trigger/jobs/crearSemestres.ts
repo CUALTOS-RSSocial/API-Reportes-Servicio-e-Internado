@@ -1,10 +1,21 @@
-/* Trabajo Crear Trimestre/Semestre Uno
- * Este trabajo permite crear todos los 2 semestres que corresponden
- * al periodo de servicio 1, de manera automática cada primero de febrero. 
- * A su vez, crear los 4 Trimestre que corresponden al periodo de servicio 1
- * 
- * Escrito por Ramón Paredes Sánchez 
- */
+
+/* ============================================================================
+  Trabajo Programado: Crear Trimestre/Semestre Uno
+  ============================================================================
+  Este trabajo automatizado se ejecuta cada **1° de enero** de cada año.
+  Su función principal es:
+   
+  1. Crear automáticamente los **semestres** correspondientes al
+    Periodo de Servicio 1 (febrero - enero).
+  2. (Opcionalmente) también permite crear los **cuatro trimestres**
+    del periodo, aunque actualmente esa parte está comentada.
+   
+  Periodos generados:
+    - Semestre 1: 1 de febrero al 30 de junio (del año en curso)
+    - Semestre 2: 1 de julio (año actual) al 31 de enero (año siguiente)
+   
+  Ramón Paredes Sánchez
+   ============================================================================ */
 
 import database from '../../database'; 
 import _CronJob from '../../resources/models/CronJob'; //invoca los trabajos automatizados

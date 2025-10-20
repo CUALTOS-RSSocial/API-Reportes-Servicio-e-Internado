@@ -2,6 +2,60 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 /* Archivo y función para crear un nuevo reporte para un usuario/servicio */
+/**
+  Función: crearReporte
+  
+  Controlador de tipo API para crear un nuevo reporte parcial (trimestral) para un usuario y su servicio asociado.
+  Esta función realiza las siguientes operaciones:
+  
+  1. Validación de datos recibidos en la petición HTTP:
+     - req.usuario: información del usuario autenticado (id y idServicio).
+     - req.body.actividadesUsuario: lista de actividades del usuario a registrar.
+     - req.body.atencionesRealizadas: lista de atenciones realizadas a registrar.
+     - req.body.horasRealizadas: número de horas realizadas.
+     - req.params.numeroReporte: número del reporte que se quiere crear (1 a 4, según trimestres).
+  
+  2. Obtención de los datos generales del servicio del usuario.
+  
+  3. Obtención de los trimestres asociados a las fechas del servicio.
+  
+  4. Verificación de la secuencia de reportes:
+     - No se pueden crear más de 4 reportes.
+     - El reporte a crear debe corresponder al siguiente trimestre disponible.
+     - Se valida que el reporte anterior ya haya sido creado.
+     - Se valida que la fecha actual sea igual o posterior al fin del trimestre correspondiente.
+  
+  5. Creación del nuevo reporte parcial en la base de datos:
+     - Inicializa arrays vacíos para actividades realizadas y atenciones realizadas.
+     - Se asocia el reporte al servicio y al trimestre correspondiente.
+  
+  6. Inserción de las atenciones realizadas proporcionadas:
+     - Cada atención se asocia al nuevo reporte y al usuario.
+  
+  7. Inserción de las actividades del usuario y actividades realizadas:
+     - Si la actividad ya existe, se reutiliza su id.
+     - Si no existe, se crea una nueva actividad y luego se registra como realizada.
+  
+  8. Devuelve el reporte creado con todas las relaciones incluidas en la respuesta HTTP.
+  
+  Manejo de errores:
+  - 400: Datos inválidos enviados en el body de la petición.
+  - 404: 
+    - Servicio no encontrado.
+    - Número de reporte no válido.
+    - Trimestre correspondiente no existe.
+    - El reporte anterior no ha sido creado.
+    - Datos inválidos de actividades o atenciones.
+ - 500: Error interno de servidor (fallo al obtener servicio, reportes, trimestres o insertar datos).
+ 
+ Funciones internas:
+ - obtenerFecha(): Devuelve la fecha actual en formato 'YYYY-MM-DD' para marcar la creación del reporte.
+ - esFechaPosterior(fecha1, fecha2): Compara dos fechas y devuelve true si fecha1 es igual o posterior a fecha2.
+  
+Dependencias:
+ - baseDatos: módulo que contiene las clases de almacenamiento para CRUD de reportes, actividades y atenciones.
+ - Modelos: ReporteParcial, ActividadesDeUsuario, ActividadesRealizadas, AtencionesRealizadas, DatosGeneralesServicio, Trimestre.
+ */ 
 
 import baseDatos from '../../../database';
 import ObjetoNoEncontrado from '../../../database/errors/ObjetoNoEncontrado';

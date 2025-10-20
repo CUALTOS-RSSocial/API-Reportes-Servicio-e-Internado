@@ -1,3 +1,5 @@
+// --- Configuración de la aplicación ---
+// Configuracion del host y bases de datos
 const config = {
   ambiente: process.env.AMBIENTE || 'develop',
   host: 'localhost',
@@ -7,6 +9,7 @@ const config = {
     password: 'dolphR0ot',
     name: 'servicio_medicina',
   },
+//autenticación y  API de SIIAU  
   autenticacion: {
     algoritmo: process.env.ALGORITMO_AUTENTICACION || 'HS256',
     semilla: process.env.SEMILLA_AUTENTICACION || 'semillapruebaJKnas490nflz7y1g083gfdjlfuq49yfvmnp934yraiesjfn1lo4780efhdsafkjdq24t0eg',

@@ -7,11 +7,27 @@
  *
  * Escrito por Ramón Paredes Sánchez.
  */
+/* ============================================================================
+  Clase: AlmacenamientoActividadRealizada
+  ============================================================================
+  Esta clase permite realizar operaciones CRUD sobre la tabla
+  `actividad_realizada` en la base de datos MySQL.
+  
+  Funcionalidades principales:
+  - Crear registros de actividades realizadas.
+  - Consultar actividades realizadas por ID de reporte parcial.
+  - Consultar actividades realizadas por usuario.
+  - Eliminar actividades de un reporte específico.
+ 
+  Forma parte de la capa de acceso a datos (DAO/Store) de la clase `Database`.
+
+  ============================================================================ */
 
 import mysql = require('mysql');
 import ActividadesRealizadas from '../resources/models/ActividadesRealizadas';
 
 export default class AlmacenamientoActividadRealizada {
+  // Conexión al pool de MySQL. Se utiliza para ejecutar queries en la base de datos.
     private conexion : mysql.Pool;
 
     constructor(con: mysql.Pool) {
@@ -19,6 +35,7 @@ export default class AlmacenamientoActividadRealizada {
     }
 
     /** Insertar valores en la tabla actividad_realizada de MySQL */
+    //Inserta un nuevo registro en la tabla `actividad_realizada` con los datos proporcionados en el objeto `actividad`.
     public async crearActividadRealizada(actividad: ActividadesRealizadas): Promise<ActividadesRealizadas> {
       const consulta = 'INSERT INTO actividad_realizada(actividad_de_usuario_id, reporte_parcial_id, cantidad)'
       + 'VALUES (?, ?, ?)';
@@ -46,6 +63,7 @@ export default class AlmacenamientoActividadRealizada {
     }
 
     /** Método para obtener las actividades realizadas de un reporte */
+    // Consulta todas las actividades registradas que pertenecen a un reporte parcial específico.
     public async obtenerPorIdReporte(idReporte: number): Promise<ActividadesRealizadas[]> {
       const consulta = 'SELECT * FROM actividad_realizada WHERE reporte_parcial_id = ?';
       const datos: ActividadesRealizadas[] = [];
@@ -54,8 +72,10 @@ export default class AlmacenamientoActividadRealizada {
           if (err) {
             reject(err);
           } else if (res.length < 1) {
+            // No hay actividades para este reporte
             resolve(datos);
           } else {
+            //Mapear filas a objetos de ActividadesRealizadas
             for (let i = 0; i < res.length; i += 1) {
               const aux = {
                 id: res[i].id,
@@ -73,6 +93,7 @@ export default class AlmacenamientoActividadRealizada {
     }
 
     /** Método para obtener las actividades realizadas de un usuario */
+    // Realiza un `JOIN` entre las tablas `servicio`, `actividad_de_usuario` y `actividad_realizada`
     public async obtenerPorIdUsuario(idUsuario: number): Promise<ActividadesRealizadas[]> {
       const consulta = 'SELECT actividad_realizada.* FROM servicio '
       + 'JOIN actividad_de_usuario ON actividad_de_usuario.servicio_id = servicio.id '
@@ -101,7 +122,7 @@ export default class AlmacenamientoActividadRealizada {
       });
       return promise;
     }
-
+    // Eliminar actividades relacionadas con un reporte parcial específico
     public async eliminarActividadesDeReporte(idReporte: number): Promise<boolean> {
       const consulta = 'DELETE FROM actividad_realizada WHERE reporte_parcial_id=?';
       const args = [idReporte];

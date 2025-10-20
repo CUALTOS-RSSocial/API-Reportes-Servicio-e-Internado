@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+// Endpoint para obtener las actividades de un usuario autenticado
 import baseDatos from '../../../database';
 import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario';
 

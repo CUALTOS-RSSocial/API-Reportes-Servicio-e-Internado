@@ -1,6 +1,48 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
+/**
+ s Función: actualizarReporte (Semestral)
+  
+  Controlador de tipo API para actualizar un reporte parcial semestral de un usuario en la base de datos.
+  Esta función realiza las siguientes operaciones:
+  
+  1. Validación de datos recibidos en la petición HTTP:
+    - req.usuario: información del usuario autenticado (id y idServicio).
+    - req.body.actividadesUsuario: lista de actividades del usuario a registrar.
+    - req.body.atencionesRealizadas: lista de atenciones realizadas a registrar.
+    - req.body.horasRealizadas: número de horas realizadas.
+    - req.params.numeroReporte: número del reporte a actualizar (1 o 2, para semestral).
+  
+  2. Verificación de existencia del servicio del usuario en la base de datos.
+ 
+  3. Obtención del reporte correspondiente del usuario y actualización de sus campos:
+    - Fecha de actualización con la fecha actual.
+    - Horas realizadas.
+    - Inicialización de arrays de actividades y atenciones.
+  
+  4. Eliminación de registros anteriores de actividades realizadas y atenciones realizadas.
+  
+  5. Inserción de nuevas atenciones realizadas asociadas al reporte.
+  
+  6. Inserción de nuevas actividades realizadas:
+    - Si la actividad ya existe, se reutiliza su id.
+    - Si no existe, se crea una nueva actividad y luego se registra como realizada.
+  
+ 7. Devuelve el reporte actualizado con todas las relaciones incluidas en la respuesta HTTP.
+  
+ Manejo de errores:
+ - 400: Datos enviados no válidos (body incompleto o mal formado).
+ - 404: Recurso no encontrado (número de reporte inválido, servicio inexistente o datos inválidos en la base).
+ - 500: Error interno de servidor (fallo al obtener servicio, actualizar reporte, eliminar registros o insertar nuevas actividades/atenciones).
+  
+ Funciones internas:
+  - obtenerFecha(): Devuelve la fecha actual en formato 'YYYY-MM-DD' para marcar la actualización.
+  
+ Dependencias:
+ - baseDatos: módulo que contiene las clases de almacenamiento para CRUD de reportes semestrales, actividades y atenciones.
+ - Modelos: ReporteParcial (Semestral), ActividadesDeUsuario, ActividadesRealizadas (Semestral), AtencionesRealizadas (Semestral).
+ */ 
 import baseDatos from '../../../database';
 import ActividadesDeUsuario from '../../../resources/models/ActividadesDeUsuario';
 import ActividadesRealizadas from '../../../resources/models/ActividadesRealizadasSemestral';

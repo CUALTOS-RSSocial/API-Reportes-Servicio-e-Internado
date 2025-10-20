@@ -1,6 +1,24 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-useless-catch */
+/* ============================================================================
+  Clase: AlmacenamientoReporteParcialSemestral
+  ============================================================================
+  Esta clase gestiona el almacenamiento y recuperación de reportes parciales
+  semestrales de servicio social en la tabla `reporte_parcial_semestral` de MySQL.
+  
+  Funcionalidades:
+  - Crear un nuevo reporte parcial semestral.
+  - Obtener reportes parciales semestrales por ID de usuario.
+  - Obtener reportes parciales semestrales por ID de servicio.
+  - Actualizar información de un reporte parcial semestral existente.
+ 
+  Integra otras clases de almacenamiento para obtener información
+  relacionada con actividades y atenciones realizadas semestrales.
+  
+  Pertenece a la capa de acceso a datos (DAO/Store).
+  Autor: Ramón Paredes Sánchez
+  ============================================================================ */
 import mysql = require('mysql');
 import ReporteParcial from '../resources/models/ReporteParcialSemestral'; //invoca el modelo del reporte parcial 
 import ObjetoNoEncontrado from './errors/ObjetoNoEncontrado';
@@ -8,18 +26,19 @@ import AlmacenamientoActividadRealizada from './AlmacenamientoActividadRealizada
 import AlmacenamientoAtencionRealizada from './AlmacenamientoAtencionRealizadaSemestral';
 
 export default class AlmacenamientoReporteParcialSemestral {
+  // Conexión al pool de MySQL para ejecutar consultas en la base de datos.
     private conexion: mysql.Pool;
-
+  // Instancia para gestionar actividades realizadas semestrales.
     private actividad: AlmacenamientoActividadRealizada;
-
+  // Instancia para gestionar atenciones realizadas semestrales.
     private atencion: AlmacenamientoAtencionRealizada;
-
+  // Constructor que inicializa la conexión y las instancias de almacenamiento relacionadas.
     constructor(con: mysql.Pool) {
       this.conexion = con;
       this.actividad = new AlmacenamientoActividadRealizada(con);
       this.atencion = new AlmacenamientoAtencionRealizada(con);
     }
-
+    // Insertar un nuevo reporte parcial semestral en la base de datos
     async crearReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
       const consulta = 'INSERT INTO reporte_parcial_semestral(servicio_id, semestre_id, actualizado, horas_realizadas) VALUES (?, ?, ?, ?)';
       const args = [
@@ -28,11 +47,14 @@ export default class AlmacenamientoReporteParcialSemestral {
         reporteParcial.actualizado,
         reporteParcial.horasRealizadas,
       ];
+      // Realiza la inserción y retorna el reporte parcial semestral creado
       const promesaReporteParcial: any = await new Promise((resolve, reject) => {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else {
+            // Construir el objeto con el ID autogenerado
             const nuevoReporteParcial = reporteParcial;
             nuevoReporteParcial.id = res.insertId;
             resolve(nuevoReporteParcial);
@@ -41,7 +63,7 @@ export default class AlmacenamientoReporteParcialSemestral {
       });
       return promesaReporteParcial;
     }
-
+    // Obtener reportes parciales semestrales por ID de usuario
     public async obtenerReportesPorIdUsuario(idUsuario: number): Promise<ReporteParcial[]> {
       const select = 'SELECT reporte_parcial_semestral.* FROM servicio '
       + 'JOIN reporte_parcial_semestral ON reporte_parcial_semestral.servicio_id = servicio.id '
@@ -49,11 +71,14 @@ export default class AlmacenamientoReporteParcialSemestral {
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(select, [idUsuario], async (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else if (res.length < 1) {
+            // Si no se encuentran reportes, retornar un arreglo vacío
             const reportesParciales: ReporteParcial[] = [];
             resolve(reportesParciales);
           } else {
+            //  Mapear cada fila a un objeto ReporteParcial con actividades y atenciones asociadas
             const datos: ReporteParcial[] = [];
             for (let i = 0; i < res.length; i += 1) {
               const aux: ReporteParcial = {
@@ -73,7 +98,7 @@ export default class AlmacenamientoReporteParcialSemestral {
       });
       return promise;
     }
-
+    // Obtener reportes parciales semestrales por ID de servicio
     public async obtenerReportesPorIdServicio(idServicio: number): Promise<ReporteParcial[]> {
       const select = 'SELECT reporte_parcial_semestral.* FROM servicio '
       + 'JOIN reporte_parcial_semestral ON reporte_parcial_semestral.servicio_id = servicio.id '
@@ -81,11 +106,14 @@ export default class AlmacenamientoReporteParcialSemestral {
       const promise: any = await new Promise((resolve, reject) => {
         this.conexion.query(select, [idServicio], async (err, res) => {
           if (err) {
+            // Si hay un error en la consulta, rechazar la promesa
             reject(err);
           } else if (res.length < 1) {
             const reportesParciales: ReporteParcial[] = [];
+            // Si no se encuentran reportes, retornar un arreglo vacío
             resolve(reportesParciales);
           } else {
+            //  Mapear cada fila a un objeto ReporteParcial con actividades y atenciones asociadas
             const reportesParciales: ReporteParcial[] = [];
             for (let i = 0; i < res.length; i += 1) {
               const aux: ReporteParcial = {
@@ -105,7 +133,7 @@ export default class AlmacenamientoReporteParcialSemestral {
       });
       return promise;
     }
-
+      // Actualizar un reporte parcial semestral existente en la base de datos
     async actualizarReporteParcial(reporteParcial: ReporteParcial): Promise<ReporteParcial> {
       const consulta = 'UPDATE reporte_parcial_semestral SET servicio_id=?, semestre_id=?, actualizado=?, horas_realizadas=? WHERE id=?';
       const args = [
@@ -119,9 +147,12 @@ export default class AlmacenamientoReporteParcialSemestral {
         this.conexion.query(consulta, args, (err, res) => {
           if (err) {
             reject(err);
+            // Si hay un error en la consulta, rechazar la promesa
           } else if (res.affectedRows < 1) {
+            // Si no se actualizó ningún registro, el reporte no existe
             reject(new ObjetoNoEncontrado());
           } else {
+            // Retornar el objeto reporte actualizado
             resolve(reporteParcial);
           }
         });
